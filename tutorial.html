@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RESCAR - Tutorial LED MULTICOLOR📲</title>
+
+<link rel="stylesheet" href="Rescar2.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<style>
+/* OVERLAY */
+#overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.7);
+    display:none;
+    z-index:999;
+}
+#overlay.active{display:block}
+
+/* SIDEBAR */
+.sidebar{
+    position:fixed;
+    top:0;
+    left:-270px;
+    width:260px;
+    height:100%;
+    background:#000;
+    padding:20px;
+    transition:.3s;
+    z-index:1000;
+    border-right:2px solid #FF7700;
+    overflow-y:auto; /* Permite rolar o menu */
+}
+.sidebar.active{left:0}
+
+.user-info{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:15px;
+    padding-bottom:10px;
+    border-bottom:1px solid #222;
+    cursor:pointer;
+}
+
+.user-avatar{
+    width:40px;
+    height:40px;
+    background:#FF7700;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#000;
+    font-size:18px;
+}
+
+.user-name{
+    font-weight:bold;
+    color:#fff;
+}
+
+.user-register{
+    margin-bottom:15px;
+}
+
+.user-register a{
+    display:block;
+    background:#FF7700;
+    color:#000;
+    text-align:center;
+    padding:8px;
+    border-radius:6px;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+.sidebar-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin:15px 0;
+    color:#FF7700;
+}
+
+.sidebar-nav a{
+    display:block;
+    padding:10px 0;
+    color:#fff;
+    text-decoration:none;
+    border-bottom:1px solid #111;
+}
+.sidebar-nav a:hover{color:#FF7700}
+
+.menu-title{
+    display:block;
+    font-size:12px;
+    color:#FF7700;
+    margin:10px 0;
+}
+
+/* CONTEÚDO CENTRAL */
+.tutorial-container{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:40px 20px;
+}
+
+.tutorial-card{
+    background:#111;
+    padding:30px;
+    border-radius:10px;
+    width:100%;
+    max-width:700px;
+    text-align:center;
+    box-shadow:0 4px 20px rgba(0,0,0,0.5);
+}
+
+.tutorial-card h1{
+    color:#FF7700;
+    font-size:28px;
+    margin-bottom:15px;
+}
+
+.tutorial-card p{
+    color:#fff;
+    font-size:16px;
+    margin:8px 0;
+}
+
+.tutorial-card video{
+    width:100%;
+    border-radius:8px;
+    margin:20px 0;
+}
+
+.tutorial-card .btn-back{
+    padding:12px 25px;
+    background:#FF7700;
+    color:#000;
+    font-weight:bold;
+    border-radius:6px;
+    text-decoration:none;
+    display:inline-block;
+    margin-top:20px;
+}
+
+.tutorial-card .btn-back:hover{
+    opacity:0.85;
+}
+
+/* SOCIAL */
+.social-section{
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:40px 0;
+}
+
+.social-title{
+    color:#555;
+    font-size:12px;
+    letter-spacing:2px;
+    font-weight:bold;
+    margin-bottom:15px;
+    display:block;
+    text-transform:uppercase;
+}
+
+.social-flex{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:20px;
+}
+
+.social-btn{
+    width:55px;
+    height:55px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:26px;
+    color:#fff;
+    text-decoration:none;
+    transition:transform 0.3s ease;
+    box-shadow:0 4px 15px rgba(0,0,0,0.5);
+}
+
+.social-btn.whatsapp{ background:#25d366; }
+.social-btn.instagram{ background:radial-gradient(circle at 30% 107%, #fdf497 0%, #fd5949 45%, #d6249f 60%, #285AEB 90%); }
+.social-btn:active{ transform:scale(0.9); }
+
+</style>
+</head>
+
+<body class="bg-black">
+
+<!-- OVERLAY -->
+<div id="overlay" onclick="toggleMenu()"></div>
+
+<!-- MENU -->
+<div id="sideMenu" class="sidebar">
+
+    <div class="user-info" id="user-info">
+        <div class="user-avatar" id="user-avatar">
+            <i class="fa-solid fa-user"></i>
+        </div>
+        <div class="user-name" id="user-name">Visitante</div>
+    </div>
+
+    <div class="user-register" id="register-box">
+        <a href="criar.html">Registrar</a>
+    </div>
+
+    <div class="sidebar-header">
+        <strong>MENU PRINCIPAL</strong>
+        <i class="fa-solid fa-xmark" onclick="toggleMenu()"></i>
+    </div>
+
+    <nav class="sidebar-nav">
+        <a href="Site.html">INICIO</a>
+
+        <span class="menu-title">Categorias</span>
+        <a href="Lite.html">LED MULTICOLOR📲</a>
+        <a href="Ledrescar.html">LED RESCAR</a>
+        <a href="Ledpingo.html">Pingo / Torpedo</a>
+        <a href="Lampadas-ds.html">LEDS DS</a>
+        <a href="Lampadas-polos.html">LEDS DE POLOS</a>
+        <a href="tutorial.html">Tutorial</a>
+
+        <span class="menu-title">Contato</span>
+        <a href="contato.html">Contato / Suporte</a>
+        <a href="localizacao.html">Localização</a>
+        <a href="login.html">Login</a>
+    </nav>
+</div>
+
+<header class="header-black">
+    <div class="header-container">
+        <div class="menu-icon" onclick="toggleMenu()">☰</div>
+        <div class="logo">RES<span>CAR</span></div>
+        <div class="cart" style="color:#FF7700">🛒 <span id="cart-count">0</span></div>
+    </div>
+</header>
+
+<!-- CONTEÚDO CENTRAL -->
+<section class="tutorial-container">
+    <div class="tutorial-card">
+        <h1>LED MULTICOLOR📲</h1>
+        <p>Tutorial de montagem</p>
+        <p>O MELHOR LED DA REGIÃO E DE ALTA TECNOLOGIA</p>
+
+        <video controls>
+            <source src="video-led.mp4" type="video/mp4">
+            Seu navegador não suporta vídeo.
+        </video>
+
+        <h2>Como funciona</h2>
+        <p>    O LED Multicolor funciona através de uma combinação do seu aparelho, permitindo voltar pra cor original e efeitos de iluminação. É ideal para personalização de veículos.</p>
+
+        <h2>Sobre o LED</h2>
+        <p>   Este modelo Multicolor é resistente, possui alta intensidade luminosa e fácil instalação. Pode ser controlado via aplicativo.</p>
+
+
+        <a href="Lite.html" class="btn-back">Voltar</a>
+    </div>
+</section>
+
+<div class="social-section">
+    <span class="social-title">CONTATO & REDES</span>
+    <div class="social-flex">
+        <a href="https://wa.me/556283250793" target="_blank" class="social-btn whatsapp">
+            <i class="fa-brands fa-whatsapp"></i>
+        </a>
+        <a href="https://www.instagram.com/rescarleds" target="_blank" class="social-btn instagram">
+            <i class="fa-brands fa-instagram"></i>
+        </a>
+    </div>
+</div>
+
+<script>
+function toggleMenu(){
+    document.getElementById('sideMenu').classList.toggle('active');
+    document.getElementById('overlay').classList.toggle('active');
+}
+
+// Redireciona para conta.html ao clicar no avatar ou nome
+document.getElementById('user-info').addEventListener('click', () => {
+    window.location.href = 'conta.html';
+});
+</script>
+
+<script type="module">
+import { supabase } from './supabase.js';
+
+async function carregarUsuario(){
+
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if(!user){
+        document.getElementById("user-name").innerText = "Visitante";
+        document.getElementById("register-box").style.display = "block";
+        return;
+    }
+
+    const { data, error } = await supabase
+        .from("users_cart")
+        .select("name")
+        .eq("email", user.email)
+        .single();
+
+    if(error){
+        console.log("Erro ao buscar nome:", error.message);
+        document.getElementById("user-name").innerText = "Usuário";
+        return;
+    }
+
+    if(data && data.name){
+        document.getElementById("user-name").innerText = data.name;
+        document.getElementById("register-box").style.display = "none";
+    } else {
+        document.getElementById("user-name").innerText = "Usuário";
+    }
+}
+
+carregarUsuario();
+</script>
+
+</body>
+</html>

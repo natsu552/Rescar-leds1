@@ -1,0 +1,197 @@
+/* RESET E FONTE */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background: #111;
+  color: #fff;
+}
+
+/* HEADER */
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: #000;
+  border-bottom: 2px solid #FF7700;
+}
+
+.admin-header h1 {
+  font-size: 20px;
+}
+
+.admin-header h1 span {
+  color: #FF7700;
+}
+
+.admin-header button {
+  background: #FF7700;
+  border: none;
+  color: #000;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+.admin-header button:hover {
+  opacity: 0.8;
+}
+
+/* CONTAINER PRINCIPAL */
+.admin-container {
+  padding: 20px;
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 15px;
+}
+
+/* CARD DE PRODUTO */
+.product-card {
+  background: #222;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+  border: 1px solid #333;
+}
+
+.product-card:hover {
+  background: #2c2c2c;
+  transform: scale(1.02);
+}
+
+.product-card h3 {
+  font-size: 14px;
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.product-price {
+  display: block;
+  text-align: center;
+  font-weight: bold;
+  color: #fff;
+}
+
+.product-old-price {
+  display: block;
+  text-align: center;
+  font-size: 13px;
+  color: #777;
+  text-decoration: line-through;
+}
+
+.promo-badge {
+  display: block;
+  text-align: center;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #FF7700;
+  font-weight: bold;
+}
+
+/* PAINEL LATERAL */
+.edit-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 320px;
+  height: 100%;
+  background: #111;
+  padding: 20px;
+  box-shadow: -4px 0 8px rgba(0, 0, 0, 0.5);
+  transform: translateX(100%);
+  transition: 0.3s;
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.panel-header h2 {
+  color: #FF7700;
+  font-size: 18px;
+}
+
+.panel-header button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+/* FORMULÁRIO DE EDIÇÃO */
+#edit-form label {
+  display: block;
+  margin: 12px 0 4px;
+  color: #FF7700;
+  font-weight: bold;
+  font-size: 13px;
+}
+
+#edit-form input,
+#edit-form textarea,
+#edit-form select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #444;
+  background: #222;
+  color: #fff;
+  font-size: 14px;
+}
+
+#edit-form input:focus,
+#edit-form textarea:focus,
+#edit-form select:focus {
+  outline: none;
+  border-color: #FF7700;
+}
+
+/* CHECKBOX PROMOÇÃO */
+.promo-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.promo-toggle input {
+  width: auto;
+  accent-color: #FF7700;
+}
+
+/* BOTÃO SALVAR */
+.save-btn {
+  margin-top: 18px;
+  background: #FF7700;
+  color: #000;
+  border: none;
+  padding: 12px;
+  width: 100%;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+.save-btn:hover {
+  opacity: 0.85;
+}

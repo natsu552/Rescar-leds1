@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rescar-leds</title>
+
+<!-- CSS na raiz -->
+<link rel="stylesheet" href="index.css">
+</head>
+<body>
+
+<div class="content">
+  <img src="logo.png" alt="Rescar-leds" class="profile-pic">
+  <h1>Rescar-leds</h1>
+  <p>Bem-vindo! Confira nossos produtos abaixo:</p>
+
+  <!-- Botão Site Oficial -->
+  <a href="lite.html" class="link-btn">
+    <div class="btn-img">
+      <img src="rescar.png" alt="Site Oficial">
+    </div>
+    <span class="btn-text">SITE OFICIAL</span>
+  </a>
+
+  <!-- Botão LED RESCAR COLORPHONE📲 -->
+  <a href="ledcolor.html" class="link-btn">
+    <div class="btn-img">
+      <img src="ledrescarcolorphone.png" alt="LED RESCAR COLORPHONE">
+    </div>
+    <span class="btn-text">LED MULTICOLOR📲</span>
+  </a>
+
+  <!-- Botão LED RESCAR -->
+  <a href="ledrescar.html" class="link-btn">
+    <div class="btn-img">
+      <img src="ledrescar.png" alt="LED RESCAR">
+    </div>
+    <span class="btn-text">LED RESCAR</span>
+  </a>
+
+  <!-- Botão Led Pingo / Torpedo -->
+  <a href="ledpingo.html" class="link-btn">
+    <div class="btn-img">
+      <img src="ledpingo.png" alt="Led Pingo">
+    </div>
+    <span class="btn-text">LED PINGO / TORPEDO</span>
+  </a>
+
+  <!-- Lâmpadas DS LEDs -->
+  <a href="lampadas-ds.html" class="link-btn">
+    <div class="btn-img">
+      <img src="lampadas-ds.png" alt="Lâmpadas DS LEDs" class="img-ds">
+    </div>
+    <span class="btn-text">LÂMPADAS DS LEDS</span>
+  </a>
+
+  <!-- Lâmpadas de Polos LEDs -->
+  <a href="lampadas-polos.html" class="link-btn">
+    <div class="btn-img">
+      <img src="lampadas-polos.png" alt="Lâmpadas de Polos LEDs" class="img-maior">
+    </div>
+    <span class="btn-text">LÂMPADAS DE POLOS LEDS</span>
+  </a>
+
+  <footer>© 2026 Rescar-leds</footer>
+</div>
+
+<script>
+/* Animação de entrada dos cards e botões */
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add("show");
+    }
+  });
+});
+
+document.querySelectorAll(".p-card, .link-btn").forEach(el => {
+  el.classList.add("animate");
+  observer.observe(el);
+});
+</script>
+
+</body>
+</html>

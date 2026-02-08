@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RESCAR LEDS - Lite</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+body{background:#000;color:#fff;padding-bottom:80px;overflow-x:hidden}
+
+/* HEADER */
+.main-header{
+    background:#111;
+    padding:15px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-bottom:1px solid #222;
+    position:sticky;
+    top:0;
+    z-index:100;
+}
+.logo-text{font-size:20px;font-weight:bold}
+.logo-text span{color:#FF7700}
+.header-icons{
+    position:relative;
+    cursor:pointer;
+}
+.header-icons i{font-size:22px}
+#cart-count{
+    background:#FF7700;
+    color:#000;
+    border-radius:50%;
+    width:20px;
+    height:20px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:12px;
+    font-weight:bold;
+    position:absolute;
+    top:-8px;
+    right:-8px;
+}
+
+/* GRID */
+.grid-layout{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    padding:12px;
+}
+.product-item{
+    background:#111;
+    border:1px solid #222;
+    padding:12px;
+    border-radius:8px;
+    text-align:center;
+    display:flex;
+    flex-direction:column;
+}
+.item-title{
+    font-size:13px;
+    height:34px;
+    overflow:hidden;
+    margin:6px 0
+}
+
+/* PREÇOS */
+.price-old{
+    color:#777;
+    font-size:14px;
+    text-decoration:line-through;
+    display:block;
+}
+.price-now{
+    color:#FF7700;
+    font-weight:bold;
+    font-size:18px;
+    display:block;
+    margin-bottom:8px;
+}
+
+/* BOTÃO */
+.btn-buy{
+    background:#FF7700;
+    border:none;
+    padding:12px;
+    border-radius:6px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+/* CARROSSEL */
+.carousel-container{
+    width:100%;
+    aspect-ratio:2/3;
+    overflow:hidden;
+    border-radius:6px;
+    margin-bottom:8px;
+    position:relative;
+}
+.carousel-track{
+    display:flex;
+    width:100%;
+    transition:transform .5s ease;
+}
+.carousel-track img{
+    width:100%;
+    flex:0 0 100%;
+    object-fit:cover;
+}
+
+/* SIDEBAR */
+.sidebar{
+    position:fixed;
+    top:0;
+    left:-260px;
+    width:260px;
+    height:100%;
+    background:#000;
+    padding:20px;
+    transition:.3s;
+    z-index:1001;
+    border-right:1px solid #FF7700;
+    overflow-y:auto;
+}
+.sidebar.active{left:0}
+
+/* USER INFO NO MENU */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid #222;
+    cursor:pointer;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    background: #FF7700;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #000;
+    font-size: 20px;
+}
+
+.user-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* BOTÃO REGISTRAR ABAIXO DO USER INFO */
+.user-register {
+    margin-bottom: 20px;
+}
+
+.user-register a {
+    display: block;
+    background: #FF7700;
+    color: #000;
+    text-align: center;
+    padding: 8px 0;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.2s;
+}
+.user-register a:hover { background:#ff9933; }
+
+.sidebar-header{
+    display:flex;
+    justify-content:space-between;
+    color:#FF7700;
+    margin-bottom:20px;
+}
+
+.sidebar-nav a{
+    display:flex;
+    align-items:center;
+    color:#fff;
+    text-decoration:none;
+    padding:12px 0;
+    border-bottom:1px solid #1a1a1a;
+}
+.sidebar-nav a:hover{color:#FF7700}
+
+.menu-title{
+    display:block;
+    color:#FF7700;
+    font-size:12px;
+    font-weight:bold;
+    text-transform:uppercase;
+    margin:10px 0;
+}
+
+/* OVERLAY */
+#overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.7);
+    display:none;
+    z-index:1000;
+}
+
+/* CARRINHO */
+#side-cart{
+    position:fixed;
+    right:-320px;
+    top:0;
+    width:300px;
+    height:100%;
+    background:#0d0d0d;
+    padding:20px;
+    transition:.3s;
+    z-index:1002;
+    display:flex;
+    flex-direction:column;
+    overflow-y:auto;
+}
+#side-cart.open{right:0}
+.cart-item{
+    display:flex;
+    justify-content:space-between;
+    border-bottom:1px solid #222;
+    padding:8px 0;
+}
+.btn-checkout{
+    background:#28a745;
+    border:none;
+    padding:14px;
+    border-radius:6px;
+    font-weight:bold;
+    color:#fff;
+    margin-top:10px;
+}
+.social-section{
+    text-align:center;
+    padding:40px 0;
+}
+.social-btn{
+    width:55px;
+    height:55px;
+    border-radius:50%;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    font-size:26px;
+    color:#fff;
+    margin:0 10px;
+}
+.whatsapp{background:#25d366}
+.instagram{background:#d6249f}
+</style>
+</head>
+<body>
+
+<!-- OVERLAY -->
+<div id="overlay"></div>
+
+<header class="main-header">
+    <div class="header-icons">
+        <i class="fa-solid fa-bars" onclick="toggleMenu()"></i>
+    </div>
+    <h1 class="logo-text">RESCAR <span>LEDS</span></h1>
+    <div class="header-icons" onclick="toggleCart()">
+        <i class="fa-solid fa-cart-shopping"></i>
+        <span id="cart-count">0</span>
+    </div>
+</header>
+
+<!-- MENU LATERAL -->
+<div class="sidebar" id="sidebar">
+    <div class="user-info" id="user-info-box">
+        <div class="user-avatar"><i class="fa-solid fa-user"></i></div>
+        <div class="user-name" id="user-name">Visitante</div>
+    </div>
+    <div class="user-register" id="register-box">
+        <a href="login1.html">Registrar</a>
+    </div>
+    <div class="sidebar-header">
+        <strong>MENU PRINCIPAL</strong>
+        <i class="fa-solid fa-xmark" onclick="toggleMenu()"></i>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="lite.html">INICIO</a>
+
+        <span class="menu-title">Categorias</span>
+        <a href="Ledcolor.html">LED MULTICOLOR📲</a>
+        <a href="Ledrescar.html">LED RESCAR</a>
+        <a href="Ledpingo.html">Pingo / Torpedo</a>
+        <a href="Lampadas-ds.html">LEDS DS</a>
+        <a href="Lampadas-polos.html">LEDS DE POLOS</a>
+
+        <span class="menu-title">Tutorial</span>
+        <a href="tutorial.html">Tutorial LED</a>
+
+        <span class="menu-title">Contato</span>
+        <a href="contato.html">Contato / Suporte</a>
+        <a href="localizacao.html">Localização</a>
+        <a href="login.html">Login</a>
+    </nav>
+</div>
+
+<!-- CARRINHO -->
+<div id="side-cart">
+    <div class="cart-header">
+        <strong>CARRINHO</strong>
+        <i class="fa-solid fa-xmark" onclick="toggleCart()"></i>
+    </div>
+    <div id="cart-items"></div>
+    <button class="btn-checkout" onclick="checkout()">FINALIZAR</button>
+</div>
+
+<!-- PRODUTOS -->
+<main class="grid-layout" id="products"></main>
+
+<!-- REDES SOCIAIS -->
+<div class="social-section">
+    <a href="https://wa.me/556283250793" target="_blank" class="social-btn whatsapp">
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
+    <a href="https://instagram.com/rescarleds" target="_blank" class="social-btn instagram">
+        <i class="fa-brands fa-instagram"></i>
+    </a>
+</div>
+
+<script type="module">
+import { supabase } from './supabase.js';
+
+const productsEl = document.getElementById('products');
+let cart = [];
+
+/* CARREGAR PRODUTOS */
+async function loadProducts(){
+
+    const { data, error } = await supabase
+        .from('products')
+        .select('id,name,price,old_price,promo_active,images')
+        .ilike('name','%MULTICOLOR%');
+
+    if(error){alert('Erro ao carregar produtos');return;}
+
+    productsEl.innerHTML = '';
+
+    data.forEach(p => {
+        const div = document.createElement('div');
+        div.className='product-item';
+
+        const carouselContainer = document.createElement('div');
+        carouselContainer.className='carousel-container';
+
+        const carouselTrack = document.createElement('div');
+        carouselTrack.className='carousel-track';
+
+        if(p.images && p.images.length>0){
+            p.images.forEach(imgName=>{
+                const img = document.createElement('img');
+                img.src=`https://uvywywtmtcjtslwlltha.supabase.co/storage/v1/object/public/Produtcs/${imgName}`;
+                carouselTrack.appendChild(img);
+            });
+        }
+        carouselContainer.appendChild(carouselTrack);
+        div.appendChild(carouselContainer);
+
+        let priceHTML='';
+        if(p.promo_active && p.old_price>p.price){
+            priceHTML=`
+                <span class="price-old">R$ ${Number(p.old_price).toFixed(2).replace('.',',')}</span>
+                <span class="price-now">R$ ${Number(p.price).toFixed(2).replace('.',',')}</span>
+            `;
+        } else {
+            priceHTML=`<span class="price-now">R$ ${Number(p.price).toFixed(2).replace('.',',')}</span>`;
+        }
+
+        const info = document.createElement('div');
+        info.innerHTML=`
+            <h3 class="item-title">${p.name}</h3>
+            ${priceHTML}
+            <button class="btn-buy">Comprar</button>
+        `;
+        div.appendChild(info);
+        productsEl.appendChild(div);
+
+        info.querySelector('.btn-buy').onclick=()=>addToCart(p.id,p.name,p.price);
+
+        if(carouselTrack.children.length>1){
+            let index=0;
+            setInterval(()=>{
+                index=(index+1)%carouselTrack.children.length;
+                carouselTrack.style.transform=`translateX(-${index*100}%)`;
+            },2500);
+        }
+    });
+}
+
+/* ADD AO CARRINHO */
+window.addToCart = (id,name,price)=>{
+    const item = cart.find(i=>i.id===id);
+    if(item)item.qtd++; else cart.push({id,name,price,qtd:1});
+    updateCart();
+    document.getElementById('side-cart').classList.add('open');
+    document.getElementById('overlay').classList.add('active');
+    document.body.style.overflow = 'hidden'; // trava scroll do fundo
+    saveCart(); 
+}
+
+/* ATUALIZA CARRINHO */
+function updateCart(){
+    const list=document.getElementById('cart-items');
+    list.innerHTML='';
+    let count=0;
+    cart.forEach(i=>{
+        count+=i.qtd;
+        list.innerHTML+=`
+        <div class="cart-item">
+            <span>${i.qtd}x ${i.name}</span>
+            <div style="display:flex;gap:8px;align-items:center;">
+                <strong>R$ ${(i.qtd*i.price).toFixed(2).replace('.',',')}</strong>
+                <button onclick="removeFromCart('${i.id}')"
+                        style="background:none;border:none;color:#FF4444;font-size:16px;cursor:pointer;">✖</button>
+            </div>
+        </div>`;
+    });
+    document.getElementById('cart-count').innerText=count;
+}
+
+/* REMOVE DO CARRINHO */
+window.removeFromCart=(id)=>{cart=cart.filter(i=>i.id!==id);updateCart();saveCart();}
+
+/* ABRE/CLOSE MENU E CARRINHO */
+const overlay=document.getElementById('overlay');
+window.toggleMenu=()=>{
+    const sidebar=document.getElementById('sidebar');
+    sidebar.classList.toggle('active');
+    overlay.classList.toggle('active', sidebar.classList.contains('active')||document.getElementById('side-cart').classList.contains('open'));
+    document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : 'auto';
+};
+window.toggleCart=()=>{
+    const cartEl=document.getElementById('side-cart');
+    cartEl.classList.toggle('open');
+    overlay.classList.toggle('active', cartEl.classList.contains('open')||document.getElementById('sidebar').classList.contains('active'));
+    document.body.style.overflow = cartEl.classList.contains('open') ? 'hidden' : 'auto';
+};
+overlay.addEventListener('click',()=>{
+    document.getElementById('sidebar').classList.remove('active');
+    document.getElementById('side-cart').classList.remove('open');
+    overlay.classList.remove('active');
+    document.body.style.overflow = 'auto';
+});
+
+window.checkout=()=>window.location.href='checkout.html';
+
+/* CARREGA USUÁRIO */
+async function carregarUsuario(){
+    const { data:{user} } = await supabase.auth.getUser();
+    if(!user){document.getElementById('user-name').innerText='Visitante';document.getElementById('register-box').style.display='block'; return;}
+    const { data, error } = await supabase.from('users_cart').select('name,cart').eq('email',user.email).single();
+    if(error){console.log(error.message);return;}
+    if(data && data.name){document.getElementById('user-name').innerText=data.name;document.getElementById('register-box').style.display='none';}
+    if(data && data.cart) cart=data.cart; updateCart();
+}
+carregarUsuario();
+
+/* REDIRECIONA PARA CONTA.HTML */
+document.getElementById('user-info-box').addEventListener('click',()=>window.location.href='conta.html');
+
+/* SALVA CARRINHO */
+async function saveCart(){
+    const { data:{ user } } = await supabase.auth.getUser();
+    if(!user) return;
+    await supabase.from('users_cart').update({cart}).eq('email',user.email);
+}
+
+loadProducts();
+</script>
+</body>
+</html>

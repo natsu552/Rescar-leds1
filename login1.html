@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login | RESCAR LEDS</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+body {
+    background:#000; color:#fff;
+    font-family: Arial,sans-serif;
+    display:flex; justify-content:center; align-items:center;
+    height:100vh;
+    margin:0;
+}
+.login-container {
+    background:#111; padding:30px; border-radius:10px;
+    width:90%; max-width:400px;
+    box-shadow: 0 0 10px #FF7700;
+}
+.login-container h1 {
+    color:#FF7700; text-align:center; margin-bottom:20px;
+}
+.login-container label {
+    display:block; margin:10px 0 5px; color:#FF7700;
+}
+.login-container input {
+    width:100%; padding:10px; border-radius:5px;
+    border:1px solid #444; background:#222; color:#fff;
+}
+.login-container input:focus {
+    outline:none;
+    border-color:#FF7700;
+}
+.login-container button {
+    width:100%; padding:12px; background:#FF7700;
+    border:none; border-radius:6px; color:#000;
+    font-weight:bold; cursor:pointer; margin-top:15px;
+    transition:0.2s;
+}
+.login-container button:hover {
+    background:#ff9933;
+}
+.login-container p {
+    margin-top:12px; text-align:center;
+    font-size:14px;
+}
+.login-container a {
+    color:#FF7700; text-decoration:none;
+}
+.login-container a:hover {
+    text-decoration:underline;
+}
+</style>
+</head>
+<body>
+
+<div class="login-container">
+    <h1>Login</h1>
+    <label for="email">Gmail:</label>
+    <input type="email" id="email" placeholder="Digite seu Gmail" required>
+    
+    <label for="password">Senha:</label>
+    <input type="password" id="password" placeholder="Digite sua senha" required>
+    
+    <button id="login-btn">Entrar</button>
+    
+    <p>Não tem conta? <a href="criar.html">Registrar-se</a></p>
+</div>
+
+<script type="module">
+import { supabase } from './supabase.js';
+
+const loginBtn = document.getElementById('login-btn');
+
+loginBtn.addEventListener('click', async () => {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+
+    if(!email || !password){
+        alert('Preencha todos os campos!');
+        return;
+    }
+
+    // Realiza login via Supabase Auth
+    const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password
+    });
+
+    if(error){
+        alert('Erro ao entrar: ' + error.message);
+        return;
+    }
+
+    if(!data.user){
+        alert('Usuário não encontrado!');
+        return;
+    }
+
+    // Redireciona para o site/lite.html
+    window.location.href = "lite.html";
+});
+</script>
+
+</body>
+</html>
