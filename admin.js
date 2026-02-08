@@ -104,5 +104,5 @@ editForm.addEventListener('submit', async (e) => {
 
 // =====================
 // INICIALIZAÇÃO
-// =====================
-loadProducts();
+w// =====================
+();
