@@ -148,12 +148,11 @@ let cart=[]
 
 /* ===== LOAD PRODUCTS DS ===== */
 async function loadProducts(){
-
-    const { data, error } = await supabase
-        .from('products')
-        .select('id,name,price,old_price,promo_active,images')
-          .ilike('name', 'D%');
-
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+     .ilike('name', 'D%');
+    .order('id',{ascending:false})
   if(error){alert(error.message);return}
 
   productsEl.innerHTML=''
