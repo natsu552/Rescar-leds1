@@ -13,7 +13,7 @@ export default function HomePage() {
   const promoProducts = [
     {
       id: '1',
-      name: 'LED H4 6000K Premium',
+      name: 'LED MULTICOLOR 6000K',
       description: 'Super brilho, vida útil de 50.000 horas',
       price: 299.90,
       sale_price: 199.90,
@@ -23,7 +23,7 @@ export default function HomePage() {
     },
     {
       id: '2',
-      name: 'LED H7 8000K Racing',
+      name: 'LED RESCAR 6000K Modelo:Dualvision',
       description: 'Luz branca azulada, estilo racing premium',
       price: 349.90,
       sale_price: 249.90,
@@ -33,7 +33,7 @@ export default function HomePage() {
     },
     {
       id: '3',
-      name: 'LED H11 Canbus',
+      name: 'LED H11 R16',
       description: 'Anti-erro, compatível com todos os carros',
       price: 279.90,
       sale_price: 189.90,
@@ -43,8 +43,8 @@ export default function HomePage() {
     },
     {
       id: '4',
-      name: 'Kit LED HB3/HB4',
-      description: 'Farol alto e baixo, 12000 lumens',
+      name: 'Kit LED MULTICOLOR HB3/HB4',
+      description: 'Farol alto e baixo, 60000K',
       price: 549.90,
       sale_price: 399.90,
       image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=500',
