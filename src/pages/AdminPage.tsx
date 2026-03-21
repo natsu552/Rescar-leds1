@@ -1,4 +1,5 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { supabase } from "@/lib/supabase"
 
 export default function AdminPage() {
   const [isAuth, setIsAuth] = useState(
@@ -35,7 +36,21 @@ export default function AdminPage() {
     setIsAuth(false)
   }
 
-  // 🖼️ UPLOAD IMAGEM
+  // 📥 CARREGAR PRODUTOS
+  useEffect(() => {
+    if (isAuth) fetchProducts()
+  }, [isAuth])
+
+  const fetchProducts = async () => {
+    const { data } = await supabase
+      .from("products")
+      .select("*")
+      .order("created_at", { ascending: false })
+
+    if (data) setProducts(data)
+  }
+
+  // 🖼️ UPLOAD
   const handleImageUpload = (e: any) => {
     const file = e.target.files[0]
     if (!file) return
@@ -47,41 +62,48 @@ export default function AdminPage() {
     reader.readAsDataURL(file)
   }
 
-  // ➕ ADICIONAR PRODUTO
-  const addProduct = () => {
+  // ➕ ADD PRODUTO
+  const addProduct = async () => {
     if (!name || !price) {
       alert("Preencha nome e preço")
       return
     }
 
-    const newProduct = {
-      id: Date.now(),
-      name,
-      model,
-      price,
-      salePrice,
-      featured,
-      image
+    const { error } = await supabase.from("products").insert([
+      {
+        name,
+        model,
+        price,
+        sale_price: salePrice,
+        featured,
+        image
+      }
+    ])
+
+    if (error) {
+      alert("Erro ao salvar")
+      return
     }
 
-    setProducts([...products, newProduct])
+    fetchProducts()
 
-    // limpar campos
+    // limpar
     setName("")
     setModel("")
     setPrice("")
     setSalePrice("")
     setFeatured(false)
     setImage(null)
-
     setShowForm(false)
   }
 
-  const removeProduct = (id: number) => {
-    setProducts(products.filter(p => p.id !== id))
+  // ❌ DELETE
+  const removeProduct = async (id: string) => {
+    await supabase.from("products").delete().eq("id", id)
+    fetchProducts()
   }
 
-  // 🔐 SE NÃO ESTIVER LOGADO
+  // 🔐 LOGIN UI
   if (!isAuth) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-[#0A0A0A] text-white">
@@ -89,9 +111,7 @@ export default function AdminPage() {
           onSubmit={handleLogin}
           className="bg-[#111] p-8 rounded-2xl w-full max-w-md"
         >
-          <h2 className="text-2xl mb-6 text-center">
-            Login Admin
-          </h2>
+          <h2 className="text-2xl mb-6 text-center">Admin Login</h2>
 
           <input
             type="email"
@@ -115,19 +135,15 @@ export default function AdminPage() {
     )
   }
 
-  // 🧠 PAINEL ADMIN
+  // 🧠 ADMIN UI
   return (
     <div className="p-10 text-white bg-[#0A0A0A] min-h-screen">
-      
+
       <div className="flex justify-between mb-8">
         <h1 className="text-3xl font-bold">Painel Admin</h1>
-
-        <button onClick={logout} className="text-red-500">
-          Sair
-        </button>
+        <button onClick={logout} className="text-red-500">Sair</button>
       </div>
 
-      {/* BOTÃO */}
       <button
         onClick={() => setShowForm(!showForm)}
         className="bg-green-500 px-4 py-2 rounded mb-6"
@@ -135,7 +151,6 @@ export default function AdminPage() {
         Adicionar Produto
       </button>
 
-      {/* FORM */}
       {showForm && (
         <div className="bg-[#111] p-6 rounded-xl mb-8">
           <h2 className="text-xl mb-4">Novo Produto</h2>
@@ -176,23 +191,17 @@ export default function AdminPage() {
                 checked={featured}
                 onChange={(e) => setFeatured(e.target.checked)}
               />
-              Destaque na página inicial
+              Destaque
             </label>
 
-            {/* UPLOAD */}
             <input
               type="file"
               accept="image/*"
               onChange={handleImageUpload}
-              className="text-sm"
             />
 
-            {/* PREVIEW */}
             {image && (
-              <img
-                src={image}
-                className="w-32 h-32 object-cover rounded"
-              />
+              <img src={image} className="w-32 h-32 rounded" />
             )}
 
             <button
@@ -205,46 +214,36 @@ export default function AdminPage() {
         </div>
       )}
 
-      {/* LISTA */}
       <div className="bg-[#111] p-6 rounded-xl">
         <h2 className="mb-4 text-xl">Produtos</h2>
-
-        {products.length === 0 && (
-          <p>Nenhum produto cadastrado</p>
-        )}
 
         {products.map(p => (
           <div
             key={p.id}
-            className="bg-[#1A1A1A] p-4 mb-3 rounded-lg flex justify-between items-center"
+            className="bg-[#1A1A1A] p-4 mb-3 rounded-lg flex justify-between"
           >
-            <div className="flex gap-4 items-center">
+            <div className="flex gap-4">
 
               {p.image && (
-                <img
-                  src={p.image}
-                  className="w-16 h-16 object-cover rounded"
-                />
+                <img src={p.image} className="w-16 h-16 rounded" />
               )}
 
               <div>
                 <p className="font-bold">{p.name}</p>
-                <p className="text-sm text-gray-400">
-                  {p.model}
-                </p>
+                <p className="text-gray-400">{p.model}</p>
 
                 <p className="line-through text-gray-500">
                   R$ {p.price}
                 </p>
 
-                {p.salePrice && (
+                {p.sale_price && (
                   <p className="text-green-400 font-bold">
-                    R$ {p.salePrice}
+                    R$ {p.sale_price}
                   </p>
                 )}
 
                 {p.featured && (
-                  <span className="text-yellow-400 text-sm">
+                  <span className="text-yellow-400">
                     ⭐ Destaque
                   </span>
                 )}
