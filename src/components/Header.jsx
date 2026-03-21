@@ -15,7 +15,7 @@ function Header() {
   );
 }
 
-const styles = {
+const style = {
   header: {
     display: "flex",
     justifyContent: "space-between",
