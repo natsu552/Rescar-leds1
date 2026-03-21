@@ -25,14 +25,8 @@ function App() {
               <Route path="/produtos" element={<ProductsPage />} />
               <Route path="/carrinho" element={<CartPage />} />
               <Route path="/checkout" element={<CheckoutPage />} />
-              <Route path="/login" element={<LoginPage />} /><Route 
-  path="/admin" 
-  element={
-    <ProtectedRoute>
-      <AdminPage />
-    </ProtectedRoute>
-  } 
-/>
+              <Route path="/login" element={<LoginPage />} /><Route />
+<Route path="/admin" element={<AdminPage />} />
             </Routes>
           </main>
           <Footer />
