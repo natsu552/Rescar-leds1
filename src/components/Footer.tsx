@@ -82,11 +82,6 @@ export default function Footer() {
                   Privacidade
                 </Link>
               </li>
-              <li>
-                <Link to="/login" className="text-gray-400 hover:text-[#FF6B00] transition-colors duration-200 text-sm">
-                  Admin
-                </Link>
-              </li>
             </ul>
           </div>
 
