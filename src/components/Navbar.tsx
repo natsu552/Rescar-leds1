@@ -1,13 +1,24 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import {ShoppingCart, Menu, X, Search, User} from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useCart } from '@/context/CartContext'
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
   const { items } = useCart()
+  const navigate = useNavigate()
   const cartCount = items.reduce((sum, item) => sum + item.quantity, 0)
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (searchTerm.trim()) {
+      navigate(`/busca?q=${encodeURIComponent(searchTerm.trim())}`)
+      setSearchTerm('')
+      setIsMenuOpen(false)
+    }
+  }
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0A0A0A]/95 backdrop-blur-md border-b border-[#FF6B00]/20">
@@ -42,13 +53,19 @@ export default function Navbar() {
 
           {/* Right Actions */}
           <div className="flex items-center space-x-4">
-            <button className="hidden md:block p-2 text-white hover:text-[#FF6B00] transition-colors duration-200">
+            <Link 
+              to="/busca"
+              className="hidden md:block p-2 text-white hover:text-[#FF6B00] transition-colors duration-200"
+            >
               <Search className="w-5 h-5" />
-            </button>
+            </Link>
             
-            <button className="hidden md:block p-2 text-white hover:text-[#FF6B00] transition-colors duration-200">
+            <Link 
+              to="/conta"
+              className="hidden md:block p-2 text-white hover:text-[#FF6B00] transition-colors duration-200"
+            >
               <User className="w-5 h-5" />
-            </button>
+            </Link>
 
             <Link 
               to="/carrinho" 
@@ -118,10 +135,30 @@ export default function Navbar() {
               >
                 Painel
               </Link>
-              <div className="pt-4 border-t border-[#FF6B00]/20 flex space-x-4">
-                <button className="flex-1 py-3 bg-[#FF6B00] hover:bg-[#FF8C00] text-white rounded-lg font-semibold transition-all duration-300 hover:glow-orange-strong">
-                  Login
-                </button>
+              <div className="pt-4 border-t border-[#FF6B00]/20 space-y-3">
+                <form onSubmit={handleSearch} className="flex gap-2">
+                  <input
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Buscar produtos..."
+                    className="flex-1 px-4 py-2 bg-[#0A0A0A] border border-[#FF6B00]/20 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-[#FF6B00]"
+                  />
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-[#FF6B00] hover:bg-[#FF8C00] text-white rounded-lg transition-colors"
+                  >
+                    <Search className="w-5 h-5" />
+                  </button>
+                </form>
+                <Link
+                  to="/conta"
+                  className="flex items-center justify-center gap-2 py-3 bg-[#FF6B00] hover:bg-[#FF8C00] text-white rounded-lg font-semibold transition-all duration-300"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <User className="w-5 h-5" />
+                  Minha Conta
+                </Link>
               </div>
             </div>
           </motion.div>

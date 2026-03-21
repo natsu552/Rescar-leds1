@@ -8,6 +8,8 @@ import CartPage from '@/pages/CartPage'
 import CheckoutPage from '@/pages/CheckoutPage'
 import LoginPage from '@/pages/LoginPage'
 import AdminPage from '@/pages/AdminPage'
+import AccountPage from '@/pages/AccountPage'
+import SearchPage from '@/pages/SearchPage'
 import ProtectedRoute from '@/components/ProtectedRoute'
 import { CartProvider } from '@/context/CartContext'
 
