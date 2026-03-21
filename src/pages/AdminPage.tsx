@@ -12,6 +12,8 @@ export default function AdminPage() {
   const [products, setProducts] = useState<any[]>([])
   const [showForm, setShowForm] = useState(false)
 
+  const [editingId, setEditingId] = useState<string | null>(null)
+
   const [name, setName] = useState("")
   const [model, setModel] = useState("")
   const [price, setPrice] = useState("")
@@ -22,7 +24,6 @@ export default function AdminPage() {
   // 🔐 LOGIN
   const handleLogin = (e: any) => {
     e.preventDefault()
-
     if (email === "rescar@kali" && password === "rescarkali") {
       localStorage.setItem("adminAuth", "true")
       setIsAuth(true)
@@ -36,7 +37,7 @@ export default function AdminPage() {
     setIsAuth(false)
   }
 
-  // 📥 CARREGAR PRODUTOS
+  // 📥 BUSCAR PRODUTOS
   useEffect(() => {
     if (isAuth) fetchProducts()
   }, [isAuth])
@@ -62,32 +63,65 @@ export default function AdminPage() {
     reader.readAsDataURL(file)
   }
 
-  // ➕ ADD PRODUTO
-  const addProduct = async () => {
+  // ➕ OU ✏️ SALVAR
+  const saveProduct = async () => {
     if (!name || !price) {
       alert("Preencha nome e preço")
       return
     }
 
-    const { error } = await supabase.from("products").insert([
-      {
-        name,
-        model,
-        price,
-        sale_price: salePrice,
-        featured,
-        image
-      }
-    ])
-
-    if (error) {
-      alert("Erro ao salvar")
-      return
+    if (editingId) {
+      // ✏️ UPDATE
+      await supabase
+        .from("products")
+        .update({
+          name,
+          model,
+          price,
+          sale_price: salePrice,
+          featured,
+          image
+        })
+        .eq("id", editingId)
+    } else {
+      // ➕ INSERT
+      await supabase.from("products").insert([
+        {
+          name,
+          model,
+          price,
+          sale_price: salePrice,
+          featured,
+          image
+        }
+      ])
     }
 
+    resetForm()
     fetchProducts()
+  }
 
-    // limpar
+  // ❌ DELETE
+  const removeProduct = async (id: string) => {
+    await supabase.from("products").delete().eq("id", id)
+    fetchProducts()
+  }
+
+  // ✏️ EDITAR
+  const editProduct = (p: any) => {
+    setEditingId(p.id)
+    setName(p.name)
+    setModel(p.model)
+    setPrice(p.price)
+    setSalePrice(p.sale_price || "")
+    setFeatured(p.featured)
+    setImage(p.image)
+    setShowForm(true)
+  }
+
+  // RESET
+  const resetForm = () => {
+    setEditingId(null)
     setName("")
     setModel("")
     setPrice("")
@@ -97,20 +131,11 @@ export default function AdminPage() {
     setShowForm(false)
   }
 
-  // ❌ DELETE
-  const removeProduct = async (id: string) => {
-    await supabase.from("products").delete().eq("id", id)
-    fetchProducts()
-  }
-
   // 🔐 LOGIN UI
   if (!isAuth) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-[#0A0A0A] text-white">
-        <form
-          onSubmit={handleLogin}
-          className="bg-[#111] p-8 rounded-2xl w-full max-w-md"
-        >
+        <form onSubmit={handleLogin} className="bg-[#111] p-8 rounded-2xl w-full max-w-md">
           <h2 className="text-2xl mb-6 text-center">Admin Login</h2>
 
           <input
@@ -148,12 +173,14 @@ export default function AdminPage() {
         onClick={() => setShowForm(!showForm)}
         className="bg-green-500 px-4 py-2 rounded mb-6"
       >
-        Adicionar Produto
+        {editingId ? "Editando Produto" : "Adicionar Produto"}
       </button>
 
       {showForm && (
         <div className="bg-[#111] p-6 rounded-xl mb-8">
-          <h2 className="text-xl mb-4">Novo Produto</h2>
+          <h2 className="text-xl mb-4">
+            {editingId ? "Editar Produto" : "Novo Produto"}
+          </h2>
 
           <div className="grid gap-4">
 
@@ -194,22 +221,30 @@ export default function AdminPage() {
               Destaque
             </label>
 
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-            />
+            <input type="file" accept="image/*" onChange={handleImageUpload} />
 
             {image && (
               <img src={image} className="w-32 h-32 rounded" />
             )}
 
-            <button
-              onClick={addProduct}
-              className="bg-green-500 p-3 rounded-lg"
-            >
-              Salvar Produto
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={saveProduct}
+                className="bg-green-500 p-3 rounded-lg w-full"
+              >
+                Salvar
+              </button>
+
+              {editingId && (
+                <button
+                  onClick={resetForm}
+                  className="bg-gray-600 p-3 rounded-lg"
+                >
+                  Cancelar
+                </button>
+              )}
+            </div>
+
           </div>
         </div>
       )}
@@ -243,19 +278,26 @@ export default function AdminPage() {
                 )}
 
                 {p.featured && (
-                  <span className="text-yellow-400">
-                    ⭐ Destaque
-                  </span>
+                  <span className="text-yellow-400">⭐ Destaque</span>
                 )}
               </div>
             </div>
 
-            <button
-              onClick={() => removeProduct(p.id)}
-              className="text-red-500"
-            >
-              Excluir
-            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={() => editProduct(p)}
+                className="text-blue-400"
+              >
+                Editar
+              </button>
+
+              <button
+                onClick={() => removeProduct(p.id)}
+                className="text-red-500"
+              >
+                Excluir
+              </button>
+            </div>
           </div>
         ))}
       </div>
