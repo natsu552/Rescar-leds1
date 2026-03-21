@@ -1,0 +1,101 @@
+{
+  "name": "products",
+  "type": "object",
+  "required": [
+    "name",
+    "price",
+    "sale_price",
+    "promo_active",
+    "featured",
+    "category",
+    "model",
+    "images",
+    "stock",
+    "description",
+    "compatibility",
+    "creator",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "name": {
+      "bsonType": "string",
+      "description": "Nome do produto LED"
+    },
+    "price": {
+      "bsonType": "double",
+      "description": "Preço normal do produto"
+    },
+    "sale_price": {
+      "bsonType": "double",
+      "description": "Preço promocional"
+    },
+    "promo_active": {
+      "bsonType": "bool",
+      "description": "Se a promoção está ativa"
+    },
+    "featured": {
+      "bsonType": "bool",
+      "description": "Se o produto aparece nos destaques"
+    },
+    "category": {
+      "bsonType": "string",
+      "description": "Categoria do LED (tipo de lâmpada)",
+      "enum": [
+        "H1",
+        "H3",
+        "H4",
+        "H7",
+        "H11",
+        "HB3",
+        "HB4",
+        "Pingo",
+        "Placa"
+      ]
+    },
+    "model": {
+      "bsonType": "string",
+      "description": "Modelo do LED"
+    },
+    "images": {
+      "bsonType": "array",
+      "description": "Array de URLs das imagens",
+      "items": {
+        "bsonType": "string"
+      }
+    },
+    "stock": {
+      "bsonType": "int",
+      "description": "Quantidade em estoque"
+    },
+    "description": {
+      "bsonType": "string",
+      "description": "Descrição detalhada do produto"
+    },
+    "compatibility": {
+      "bsonType": "array",
+      "description": "Lista de carros compatíveis",
+      "items": {
+        "bsonType": "string"
+      }
+    },
+    "creator": {
+      "bsonType": "string",
+      "description": "ID do usuário criador"
+    },
+    "creatorEmail": {
+      "bsonType": "string",
+      "description": "Creator user email"
+    },
+    "createdAt": {
+      "bsonType": "string",
+      "title": "datetime",
+      "description": "ISO 8601 datetime string (UTC): YYYY-MM-DDTHH:mm:ss.sssZ"
+    },
+    "updatedAt": {
+      "bsonType": "string",
+      "title": "datetime",
+      "description": "ISO 8601 datetime string (UTC): YYYY-MM-DDTHH:mm:ss.sssZ"
+    }
+  }
+}

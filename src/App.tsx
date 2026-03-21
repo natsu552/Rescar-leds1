@@ -6,6 +6,9 @@ import HomePage from '@/pages/HomePage'
 import ProductsPage from '@/pages/ProductsPage'
 import CartPage from '@/pages/CartPage'
 import CheckoutPage from '@/pages/CheckoutPage'
+import LoginPage from '@/pages/LoginPage'
+import AdminPage from '@/pages/AdminPage'
+import ProtectedRoute from '@/components/ProtectedRoute'
 import { CartProvider } from '@/context/CartContext'
 
 function App() {
@@ -20,6 +23,15 @@ function App() {
               <Route path="/produtos" element={<ProductsPage />} />
               <Route path="/carrinho" element={<CartPage />} />
               <Route path="/checkout" element={<CheckoutPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route 
+                path="/admin" 
+                element={
+                  <ProtectedRoute requireAdmin={true}>
+                    <AdminPage />
+                  </ProtectedRoute>
+                } 
+              />
             </Routes>
           </main>
           <Footer />
