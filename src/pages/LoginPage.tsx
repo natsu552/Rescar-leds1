@@ -13,18 +13,24 @@ export default function LoginPage() {
       localStorage.setItem("adminAuth", "true")
       navigate("/admin")
     } else {
-      alert("Email ou senha incorretos")
+      alert("Credenciais inválidas")
     }
   }
 
   return (
-    <div className="text-white p-10">
-      <h1>Login Admin</h1>
+    <div className="flex items-center justify-center min-h-screen bg-[#0A0A0A] text-white">
+      <form
+        onSubmit={handleLogin}
+        className="bg-[#111] p-8 rounded-2xl shadow-lg w-full max-w-md"
+      >
+        <h2 className="text-2xl font-bold mb-6 text-center">
+          Acesso Administrativo
+        </h2>
 
-      <form onSubmit={handleLogin}>
         <input
           type="email"
           placeholder="Email"
+          className="w-full p-3 mb-4 bg-[#1A1A1A] rounded-lg outline-none"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
@@ -32,11 +38,14 @@ export default function LoginPage() {
         <input
           type="password"
           placeholder="Senha"
+          className="w-full p-3 mb-6 bg-[#1A1A1A] rounded-lg outline-none"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        <button type="submit">Entrar</button>
+        <button className="w-full bg-green-500 hover:bg-green-600 p-3 rounded-lg font-semibold">
+          Entrar
+        </button>
       </form>
     </div>
   )
