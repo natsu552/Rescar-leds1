@@ -35,6 +35,9 @@ export default function Navbar() {
             <Link to="/contato" className="text-white hover:text-[#FF6B00] transition-colors duration-200 font-medium">
               Contato
             </Link>
+            <Link to="/admin" className="text-white hover:text-[#FF6B00] transition-colors duration-200 font-medium">
+              Painel
+            </Link>
           </div>
 
           {/* Right Actions */}
@@ -107,6 +110,13 @@ export default function Navbar() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 Contato
+              </Link>
+              <Link 
+                to="/admin" 
+                className="block text-white hover:text-[#FF6B00] transition-colors duration-200 font-medium py-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Painel
               </Link>
               <div className="pt-4 border-t border-[#FF6B00]/20 flex space-x-4">
                 <button className="flex-1 py-3 bg-[#FF6B00] hover:bg-[#FF8C00] text-white rounded-lg font-semibold transition-all duration-300 hover:glow-orange-strong">
