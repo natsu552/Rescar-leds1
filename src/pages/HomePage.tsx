@@ -16,14 +16,14 @@ export default function HomePage() {
   const fetchProducts = async () => {
     const { data, error } = await supabase
       .from('products')
-      .select('id, name, model, price, sale_price, image, featured, promo_active, stock')
-      .eq('featured', true)
-
+      .select('name, price, sale_price, image, featured')
+      .eq('featured', true) 
     if (error) {
       console.log(error)
       return
     }
 
+    // 🔥 ADAPTAÇÃO PARA O CARD (SEM QUEBRAR DESIGN)
     const formatted = (data || []).map((p: any) => ({
       id: p.id,
       name: p.name,
@@ -99,7 +99,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Produtos */}
+      {/* Produtos em Promoção */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4">
 
@@ -125,15 +125,14 @@ export default function HomePage() {
               return (
                 <motion.div key={product.id} className="relative">
 
+                  {/* 🔥 BADGE DESCONTO */}
                   {discount > 0 && (
                     <div className="absolute top-2 left-2 bg-red-600 text-white text-xs px-2 py-1 rounded font-bold z-10">
                       -{discount}%
                     </div>
                   )}
 
-                  {/* ✅ AGORA SÓ O CARD */}
                   <ProductCard product={product} />
-
                 </motion.div>
               )
             })}
