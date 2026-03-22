@@ -197,91 +197,91 @@ export default function AdminPage() {
         ))}
       </div>
 
-      {/* MODAL */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+{/* MODAL */}
+{showModal && (
+  <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
 
-          <div className="bg-[#111] p-8 rounded-2xl w-full max-w-lg space-y-4 border border-orange-500">
+    <div className="bg-[#111] p-6 rounded-2xl w-full max-w-md space-y-3 border border-orange-500">
 
-            <h2 className="text-xl font-bold text-orange-500">
-              {editingId ? "Editar Produto" : "Novo Produto"}
-            </h2>
+      <h2 className="text-lg font-bold text-orange-500">
+        {editingId ? "Editar Produto" : "Novo Produto"}
+      </h2>
 
-            <input
-              placeholder="Nome"
-              className={inputStyle}
-              value={form.name}
-              onChange={e => setForm({ ...form, name: e.target.value })}
-            />
+      <input
+        placeholder="Nome"
+        className={inputStyle + " p-2 text-sm"}
+        value={form.name}
+        onChange={e => setForm({ ...form, name: e.target.value })}
+      />
 
-            <input
-              placeholder="Modelo"
-              className={inputStyle}
-              value={form.model}
-              onChange={e => setForm({ ...form, model: e.target.value })}
-            />
+      <input
+        placeholder="Modelo"
+        className={inputStyle + " p-2 text-sm"}
+        value={form.model}
+        onChange={e => setForm({ ...form, model: e.target.value })}
+      />
 
-            <input
-              type="number"
-              placeholder="Preço"
-              className={inputStyle}
-              value={form.price}
-              onChange={e => setForm({ ...form, price: e.target.value })}
-            />
+      <input
+        type="number"
+        placeholder="Preço"
+        className={inputStyle + " p-2 text-sm"}
+        value={form.price}
+        onChange={e => setForm({ ...form, price: e.target.value })}
+      />
 
-            <label className="flex justify-between text-sm">
-              Promoção
-              <input
-                type="checkbox"
-                checked={form.promo_active}
-                onChange={e => setForm({ ...form, promo_active: e.target.checked })}
-              />
-            </label>
+      <label className="flex justify-between text-sm">
+        Promoção
+        <input
+          type="checkbox"
+          checked={form.promo_active}
+          onChange={e => setForm({ ...form, promo_active: e.target.checked })}
+        />
+      </label>
 
-            {form.promo_active && (
-              <input
-                type="number"
-                placeholder="Preço Promoção"
-                className={inputStyle}
-                value={form.sale_price}
-                onChange={e => setForm({ ...form, sale_price: e.target.value })}
-              />
-            )}
-
-            <label className="flex justify-between text-sm">
-              Destaque
-              <input
-                type="checkbox"
-                checked={form.featured}
-                onChange={e => setForm({ ...form, featured: e.target.checked })}
-              />
-            </label>
-
-            <label className="flex justify-between text-sm">
-              Esgotado
-              <input
-                type="checkbox"
-                checked={form.out_of_stock}
-                onChange={e => setForm({ ...form, out_of_stock: e.target.checked })}
-              />
-            </label>
-
-            <input type="file" onChange={handleImage} className="text-sm" />
-
-            {form.image && <img src={form.image} className="w-24 rounded" />}
-
-            <div className="flex gap-3">
-              <button onClick={save} className="bg-orange-500 w-full p-3 rounded font-bold hover:scale-105 transition">
-                Salvar
-              </button>
-              <button onClick={closeModal} className="bg-gray-600 w-full p-3 rounded">
-                Cancelar
-              </button>
-            </div>
-
-          </div>
-        </div>
+      {form.promo_active && (
+        <input
+          type="number"
+          placeholder="Preço Promoção"
+          className={inputStyle + " p-2 text-sm"}
+          value={form.sale_price}
+          onChange={e => setForm({ ...form, sale_price: e.target.value })}
+        />
       )}
+
+      <label className="flex justify-between text-sm">
+        Destaque
+        <input
+          type="checkbox"
+          checked={form.featured}
+          onChange={e => setForm({ ...form, featured: e.target.checked })}
+        />
+      </label>
+
+      <label className="flex justify-between text-sm">
+        Esgotado
+        <input
+          type="checkbox"
+          checked={form.out_of_stock}
+          onChange={e => setForm({ ...form, out_of_stock: e.target.checked })}
+        />
+      </label>
+
+      <input type="file" onChange={handleImage} className="text-sm" />
+
+      {form.image && <img src={form.image} className="w-20 rounded" />}
+
+      <div className="flex gap-2 pt-2">
+        <button onClick={save} className="bg-orange-500 w-full p-2 rounded font-bold hover:scale-105 transition text-sm">
+          Salvar
+        </button>
+        <button onClick={closeModal} className="bg-gray-600 w-full p-2 rounded text-sm">
+          Cancelar
+        </button>
+      </div>
+
+    </div>
+  </div>
+)}
     </div>
   )
 }
