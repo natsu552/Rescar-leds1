@@ -6,7 +6,7 @@ import ProductCard from '@/components/ProductCard'
 import { supabase } from '@/lib/supabase'
 
 export default function HomePage() {
-  const [promoProducts, setPromoProducts] = useState<any[]>([])
+  const [products, setProducts] = useState<any[]>([])
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -16,94 +16,50 @@ export default function HomePage() {
   const fetchProducts = async () => {
     const { data, error } = await supabase
       .from('products')
-      .select('*')
-      .eq('featured', true)
-      .eq('promo_active', true)
+      .select('*') // 🔥 SEM FILTRO
 
     if (error) {
-      console.log(error)
+      console.log("ERRO:", error)
+      alert("Erro ao buscar produtos")
       return
     }
 
-    setPromoProducts(data || [])
+    console.log("PRODUTOS:", data)
+    setProducts(data || [])
   }
 
   return (
     <div className="pt-20">
-      {/* Hero Section */}
-      <section className="relative h-[90vh] flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 z-0">
+      {/* Hero */}
+      <section className="relative h-[90vh] flex items-center justify-center">
+        <div className="absolute inset-0">
           <img 
             src="https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=1920" 
-            alt="Carro esportivo com LEDs"
             className="w-full h-full object-cover opacity-40"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A0A] via-transparent to-[#0A0A0A]"></div>
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0A0A0A] via-transparent to-[#0A0A0A]"></div>
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <h1 className="text-5xl md:text-7xl font-black text-white mb-6 glow-orange leading-tight">
-              Ilumine sua presença.<br />
-              <span className="text-[#FF6B00]">Domine a noite.</span>
-            </h1>
-            <p className="text-xl text-gray-300 mb-8">
-              LEDs automotivos de alta performance para transformar seu veículo
-            </p>
-            <Link 
-              to="/produtos" 
-              className="inline-flex items-center space-x-2 bg-[#FF6B00] px-8 py-4 rounded-lg font-bold"
-            >
-              <span>Ver Ofertas</span>
-              <ArrowRight className="w-5 h-5" />
-            </Link>
-          </motion.div>
+        <div className="relative text-center">
+          <h1 className="text-5xl text-white font-black">
+            Ilumine sua presença
+          </h1>
+          <Link to="/produtos" className="bg-orange-500 px-6 py-3 mt-4 inline-block">
+            Ver Produtos
+          </Link>
         </div>
       </section>
 
-      {/* Benefícios */}
-      <section className="py-20 bg-[#1A1A1A]">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8">
-            {[
-              { icon: Zap, title: 'Alta Performance', desc: 'Até 300% mais luz' },
-              { icon: Shield, title: 'Garantia', desc: '2 anos' },
-              { icon: Truck, title: 'Frete Grátis', desc: 'Acima de R$ 299' },
-              { icon: Star, title: 'Qualidade', desc: 'ISO' }
-            ].map((item, index) => (
-              <motion.div key={index} className="text-center">
-                <div className="w-16 h-16 bg-[#FF6B00] rounded-full flex items-center justify-center mx-auto mb-4">
-                  <item.icon className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-white font-bold">{item.title}</h3>
-                <p className="text-gray-400">{item.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Produtos em Promoção */}
+      {/* Produtos */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4">
 
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-black text-white mb-4 glow-orange">
-              Ofertas Especiais
-            </h2>
-            <p className="text-gray-400">
-              Produtos selecionados com desconto
-            </p>
-          </div>
+          <h2 className="text-4xl text-white mb-10 text-center">
+            Produtos
+          </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
-            {promoProducts.map((product, index) => (
+            {products.map((product) => (
               <motion.div key={product.id}>
                 <ProductCard product={product} />
               </motion.div>
@@ -111,26 +67,7 @@ export default function HomePage() {
 
           </div>
 
-          <div className="text-center mt-12">
-            <Link 
-              to="/produtos" 
-              className="border-2 border-[#FF6B00] px-8 py-3 rounded-lg text-white"
-            >
-              Ver Todos os Produtos
-            </Link>
-          </div>
-
         </div>
-      </section>
-
-      {/* CTA */}
-      <section className="py-20 bg-gradient-to-r from-[#FF6B00] to-[#FF0000] text-center">
-        <h2 className="text-4xl text-white mb-6">
-          Pronto para transformar seu carro?
-        </h2>
-        <Link to="/produtos" className="bg-black px-8 py-4 rounded-lg text-white">
-          Começar Agora
-        </Link>
       </section>
     </div>
   )
