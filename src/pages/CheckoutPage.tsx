@@ -18,6 +18,9 @@ export default function CheckoutPage() {
     state: ''
   })
 
+  const [shippingOptions, setShippingOptions] = useState<any[]>([])
+  const [selectedShipping, setSelectedShipping] = useState<any>(null)
+
   useEffect(() => {
     window.scrollTo(0, 0)
     if (items.length === 0) {
@@ -25,7 +28,7 @@ export default function CheckoutPage() {
     }
   }, [items, navigate])
 
-  // 🔥 BUSCAR CEP AUTOMÁTICO
+  // 🔥 CALCULAR FRETE
   const handleCep = async (cep: string) => {
     setForm({ ...form, cep })
 
@@ -41,6 +44,41 @@ export default function CheckoutPage() {
             city: data.localidade,
             state: data.uf
           }))
+
+          // 🔥 FRETES
+          let economico = 25
+          let expresso = 45
+
+          if (data.uf === 'GO') {
+            economico = 10
+            expresso = 20
+          } else if (['SP', 'MG'].includes(data.uf)) {
+            economico = 20
+            expresso = 35
+          }
+
+          // 🎯 FRETE GRÁTIS
+          if (total > 299) {
+            economico = 0
+          }
+
+          const options = [
+            {
+              id: 'economico',
+              name: 'Frete Econômico',
+              price: economico,
+              time: '5 a 10 dias'
+            },
+            {
+              id: 'expresso',
+              name: 'Frete Expresso',
+              price: expresso,
+              time: '1 a 3 dias'
+            }
+          ]
+
+          setShippingOptions(options)
+          setSelectedShipping(options[0]) // padrão
         }
       } catch (err) {
         console.log(err)
@@ -49,8 +87,12 @@ export default function CheckoutPage() {
   }
 
   const handleSubmit = () => {
-    alert('Pedido finalizado (simulação) 🚀')
-    // 🔥 Aqui depois entra Stripe ou Mercado Pago
+    if (!selectedShipping) {
+      alert('Selecione um frete')
+      return
+    }
+
+    alert('Pedido finalizado 🚀')
   }
 
   return (
@@ -59,48 +101,25 @@ export default function CheckoutPage() {
       {/* HEADER */}
       <div className="bg-gradient-to-r from-[#1A1A1A] to-[#0A0A0A] py-12 border-b border-[#FF6B00]/20">
         <div className="max-w-7xl mx-auto px-4">
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <div className="flex items-center gap-3 mb-4">
-              <Lock className="w-8 h-8 text-[#FF6B00]" />
-              <h1 className="text-4xl font-black text-white">
-                Checkout Seguro
-              </h1>
-            </div>
-          </motion.div>
+          <div className="flex items-center gap-3">
+            <Lock className="w-8 h-8 text-[#FF6B00]" />
+            <h1 className="text-4xl font-black text-white">
+              Checkout Seguro
+            </h1>
+          </div>
         </div>
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-12 grid lg:grid-cols-2 gap-8">
 
-        {/* 🧾 FORMULÁRIO */}
+        {/* 🧾 FORM */}
         <div className="bg-[#1A1A1A] p-6 rounded-xl border border-[#FF6B00]/20">
 
-          <h2 className="text-xl font-bold text-white mb-6">
-            Dados do Cliente
+          <h2 className="text-white text-xl font-bold mb-6">
+            Endereço
           </h2>
 
           <div className="grid gap-4">
-
-            <input
-              placeholder="Nome completo"
-              className="input"
-              value={form.name}
-              onChange={e => setForm({ ...form, name: e.target.value })}
-            />
-
-            <input
-              placeholder="Email"
-              className="input"
-              value={form.email}
-              onChange={e => setForm({ ...form, email: e.target.value })}
-            />
-
-            <input
-              placeholder="Telefone"
-              className="input"
-              value={form.phone}
-              onChange={e => setForm({ ...form, phone: e.target.value })}
-            />
 
             <input
               placeholder="CEP"
@@ -121,56 +140,99 @@ export default function CheckoutPage() {
                 placeholder="Cidade"
                 className="input"
                 value={form.city}
-                onChange={e => setForm({ ...form, city: e.target.value })}
               />
 
               <input
                 placeholder="Estado"
                 className="input"
                 value={form.state}
-                onChange={e => setForm({ ...form, state: e.target.value })}
               />
             </div>
 
           </div>
+
+          {/* 🚚 FRETES */}
+          {shippingOptions.length > 0 && (
+            <div className="mt-6">
+
+              <h3 className="text-white font-bold mb-4">
+                Escolha o Frete
+              </h3>
+
+              <div className="space-y-3">
+                {shippingOptions.map(option => (
+                  <div
+                    key={option.id}
+                    onClick={() => setSelectedShipping(option)}
+                    className={`p-4 rounded-lg border cursor-pointer transition ${
+                      selectedShipping?.id === option.id
+                        ? 'border-[#FF6B00] bg-[#FF6B00]/10'
+                        : 'border-gray-700'
+                    }`}
+                  >
+                    <div className="flex justify-between text-white font-bold">
+                      <span>{option.name}</span>
+                      <span>R$ {option.price}</span>
+                    </div>
+
+                    <p className="text-gray-400 text-sm">
+                      {option.time}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+            </div>
+          )}
+
         </div>
 
         {/* 🛒 RESUMO */}
         <div className="bg-[#1A1A1A] p-6 rounded-xl border border-[#FF6B00]/20">
 
-          <h2 className="text-xl font-bold text-white mb-6">
+          <h2 className="text-white text-xl font-bold mb-6">
             Seu Pedido
           </h2>
 
-          <div className="space-y-4 mb-6">
-
+          <div className="space-y-3 mb-6">
             {items.map(item => (
               <div key={item.id} className="flex justify-between text-gray-300">
                 <span>{item.name}</span>
                 <span>R$ {item.price}</span>
               </div>
             ))}
-
           </div>
 
+          {/* FRETE */}
+          {selectedShipping && (
+            <div className="flex justify-between text-gray-300 mb-4">
+              <span>Frete</span>
+              <span>R$ {selectedShipping.price}</span>
+            </div>
+          )}
+
+          {/* TOTAL */}
           <div className="border-t border-gray-700 pt-4 mb-6">
-            <div className="flex justify-between text-white font-bold text-lg">
+            <div className="flex justify-between text-white text-xl font-bold">
               <span>Total</span>
-              <span>R$ {total}</span>
+              <span>
+                R$ {total + (selectedShipping?.price || 0)}
+              </span>
             </div>
           </div>
 
           <button
             onClick={handleSubmit}
-            className="w-full bg-[#FF6B00] hover:bg-[#FF8C00] p-3 rounded-lg font-bold text-white transition"
+            className="w-full bg-[#FF6B00] hover:bg-[#FF8C00] p-3 rounded-lg font-bold text-white"
           >
             Finalizar Compra
           </button>
 
         </div>
+
       </div>
 
-      {/* 🎨 STYLE PADRÃO INPUT */}
+      {/* 🎨 INPUT STYLE */}
       <style>
         {`
           .input {
@@ -179,16 +241,11 @@ export default function CheckoutPage() {
             padding: 12px;
             border-radius: 8px;
             color: white;
-            outline: none;
-          }
-
-          .input::placeholder {
-            color: #666;
           }
 
           .input:focus {
+            outline: none;
             border-color: #FF8C00;
-            box-shadow: 0 0 0 1px #FF6B00;
           }
         `}
       </style>
