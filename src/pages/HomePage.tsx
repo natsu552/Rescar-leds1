@@ -151,9 +151,18 @@ export default function HomePage() {
                   {/* 🔥 BOTÃO NOVO */}
                   <div className="mt-3">
                     {product.out_of_stock === true ? (
-                      <button className="w-full bg-red-600 p-2 rounded font-bold cursor-not-allowed">
-                       Esgotado 
-                      </button>
+                      <button
+          onClick={handleAddToCart}
+          disabled={product.stock <= 0}
+          className={`w-full py-3 rounded-lg font-bold flex items-center justify-center space-x-2 transition-all duration-300 ${
+            product.stock <= 0
+              ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
+              : 'bg-[#FF6B00] hover:bg-[#FF8C00] text-white hover:glow-orange-strong'
+          }`}
+        >
+          <ShoppingCart className="w-5 h-5" />
+          <span>{product.stock <= 0 ? 'Esgotado' : 'Adicionar ao Carrinho'}</span>
+        </button>
                     ) : (
                       <button
                         onClick={() => addToCart(product)}
