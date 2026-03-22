@@ -1,47 +1,21 @@
-import React, { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowRight, Zap, Shield, Truck, Star } from 'lucide-react'
+import { Filter, X } from 'lucide-react'
+import { useNavigate } from 'react-router-dom' // 🔥 NOVO
 import ProductCard from '@/components/ProductCard'
-import { supabase } from '@/lib/supabase'
 
-export default function HomePage() {
-  const [promoProducts, setPromoProducts] = useState<any[]>([])
-  const navigate = useNavigate()
+export default function ProductsPage() {
+  const [isFilterOpen, setIsFilterOpen] = useState(false)
+  const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  const [priceRange, setPriceRange] = useState<string>('all')
+
+  const navigate = useNavigate() // 🔥 NOVO
 
   useEffect(() => {
     window.scrollTo(0, 0)
-    fetchProducts()
   }, [])
 
-  const fetchProducts = async () => {
-    const { data, error } = await supabase
-      .from('products')
-      .select('id, name, model, price, sale_price, image, featured, promo_active, out_of_stock')
-      .eq('featured', true)
-
-    if (error) {
-      console.log(error)
-      return
-    }
-
-    const formatted = (data || []).map((p: any) => ({
-      id: p.id,
-      name: p.name,
-      description: p.model,
-      price: Number(p.price),
-      sale_price: p.sale_price ? Number(p.sale_price) : null,
-      image: p.image,
-      promo_active: p.promo_active,
-      featured: p.featured,
-      out_of_stock: p.out_of_stock === true, // 🔥 corrigido
-      stock: p.stock || 0
-    }))
-
-    setPromoProducts(formatted)
-  }
-
-  // 🛒 SALVA + REDIRECIONA
+  // 🛒 FUNÇÃO DO CARRINHO
   const addToCart = (product: any) => {
     let cart = JSON.parse(localStorage.getItem("cart") || "[]")
 
@@ -52,82 +26,108 @@ export default function HomePage() {
       localStorage.setItem("cart", JSON.stringify(cart))
     }
 
-    // 🔥 VAI PRO CARRINHO
-    navigate('/carrinho')
+    navigate('/carrinho') // 🔥 REDIRECIONA
   }
 
+  // Mock de produtos
+  const allProducts = [
+    {
+      id: '1',
+      name: 'LED H4 6000K Premium',
+      description: 'Super brilho, vida útil de 50.000 horas',
+      price: 299.90,
+      sale_price: 199.90,
+      image: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=500',
+      category: 'H4',
+      promo_active: true,
+      stock: 15,
+      out_of_stock: false // 🔥 IMPORTANTE
+    },
+    {
+      id: '2',
+      name: 'LED H7 8000K Racing',
+      description: 'Luz branca azulada, estilo racing premium',
+      price: 349.90,
+      sale_price: 249.90,
+      image: 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=500',
+      category: 'H7',
+      promo_active: true,
+      stock: 8,
+      out_of_stock: false
+    },
+    {
+      id: '3',
+      name: 'LED H11 Canbus',
+      description: 'Anti-erro, compatível com todos os carros',
+      price: 279.90,
+      sale_price: 189.90,
+      image: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=500',
+      category: 'H11',
+      promo_active: true,
+      stock: 20,
+      out_of_stock: false
+    },
+    {
+      id: '4',
+      name: 'Kit LED HB3/HB4',
+      description: 'Farol alto e baixo, 12000 lumens',
+      price: 549.90,
+      sale_price: 399.90,
+      image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=500',
+      category: 'HB',
+      promo_active: true,
+      stock: 5,
+      out_of_stock: true // 🔥 exemplo esgotado
+    }
+  ]
+
   return (
-    <div className="pt-20">
-      {/* Hero */}
-      <section className="relative h-[90vh] flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <img 
-            src="https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=1920" 
-            className="w-full h-full object-cover opacity-40"
-          />
-        </div>
-
-        <div className="relative z-10 text-center">
-          <h1 className="text-5xl md:text-7xl font-black text-white mb-6">
-            Ilumine sua presença
-          </h1>
-
-          <Link to="/produtos" className="bg-[#FF6B00] px-8 py-4 rounded-lg font-bold">
-            Ver Ofertas
-          </Link>
-        </div>
-      </section>
-
-      {/* PRODUTOS */}
-      <section className="py-20">
+    <div className="pt-20 min-h-screen">
+      
+      {/* HEADER */}
+      <div className="bg-gradient-to-r from-[#1A1A1A] to-[#0A0A0A] py-12 border-b border-[#FF6B00]/20">
         <div className="max-w-7xl mx-auto px-4">
+          <h1 className="text-4xl font-black text-white mb-4">
+            Catálogo de Produtos
+          </h1>
+        </div>
+      </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="max-w-7xl mx-auto px-4 py-12">
 
-            {promoProducts.map((product) => {
-              const discount =
-                product.promo_active && product.sale_price
-                  ? Math.round(
-                      ((product.price - product.sale_price) / product.price) * 100
-                    )
-                  : 0
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
-              return (
-                <motion.div key={product.id} className="relative">
+          {allProducts.map((product, index) => (
+            <motion.div
+              key={product.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
 
-                  {/* DESCONTO */}
-                  {discount > 0 && (
-                    <div className="absolute top-2 left-2 bg-red-600 text-white text-xs px-2 py-1 rounded">
-                      -{discount}%
-                    </div>
-                  )}
+              <ProductCard product={product} />
 
-                  <ProductCard product={product} />
+              {/* 🔥 BOTÃO IGUAL HOME */}
+              <div className="mt-3">
+                {product.out_of_stock === true ? (
+                  <button className="w-full bg-red-600 p-3 rounded-lg font-bold cursor-not-allowed">
+                    Esgotado
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => addToCart(product)}
+                    className="w-full bg-[#FF6B00] hover:bg-[#FF8C00] p-3 rounded-lg font-bold transition"
+                  >
+                    Comprar
+                  </button>
+                )}
+              </div>
 
-                  {/* 🔥 BOTÃO */}
-                  <div className="mt-3">
-                    {product.out_of_stock === true ? (
-                      <button className="w-full bg-red-600 p-2 rounded font-bold cursor-not-allowed">
-                        Esgotado
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => addToCart(product)}
-                        className="w-full bg-[#FF6B00] hover:bg-[#FF8C00] p-2 rounded font-bold transition"
-                      >
-                        Comprar
-                      </button>
-                    )}
-                  </div>
-
-                </motion.div>
-              )
-            })}
-
-          </div>
+            </motion.div>
+          ))}
 
         </div>
-      </section>
+
+      </div>
     </div>
   )
 }
