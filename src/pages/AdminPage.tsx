@@ -11,6 +11,7 @@ export default function AdminPage() {
 
   const [products, setProducts] = useState<any[]>([])
   const [showForm, setShowForm] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
 
   const [name, setName] = useState("")
   const [model, setModel] = useState("")
@@ -36,21 +37,26 @@ export default function AdminPage() {
     setIsAuth(false)
   }
 
-  // 📥 CARREGAR PRODUTOS
+  // 📥 BUSCAR PRODUTOS
   useEffect(() => {
     if (isAuth) fetchProducts()
   }, [isAuth])
 
   const fetchProducts = async () => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("products")
       .select("*")
       .order("created_at", { ascending: false })
 
-    if (data) setProducts(data)
+    if (error) {
+      console.log(error)
+      return
+    }
+
+    setProducts(data || [])
   }
 
-  // 🖼️ UPLOAD
+  // 🖼️ IMAGEM
   const handleImageUpload = (e: any) => {
     const file = e.target.files[0]
     if (!file) return
@@ -62,32 +68,9 @@ export default function AdminPage() {
     reader.readAsDataURL(file)
   }
 
-  // ➕ ADD PRODUTO
-  const addProduct = async () => {
-    if (!name || !price) {
-      alert("Preencha nome e preço")
-      return
-    }
-
-    const { error } = await supabase.from("products").insert([
-      {
-        name,
-        model,
-        price,
-        sale_price: salePrice,
-        featured,
-        image
-      }
-    ])
-
-    if (error) {
-      alert("Erro ao salvar")
-      return
-    }
-
-    fetchProducts()
-
-    // limpar
+  // 🧠 RESET
+  const resetForm = () => {
+    setEditingId(null)
     setName("")
     setModel("")
     setPrice("")
@@ -97,20 +80,81 @@ export default function AdminPage() {
     setShowForm(false)
   }
 
+  // ➕ / ✏️ SALVAR
+  const saveProduct = async () => {
+    if (!name || !price) {
+      alert("Preencha nome e preço")
+      return
+    }
+
+    const payload = {
+      name,
+      model,
+      price: Number(price),
+      sale_price: salePrice ? Number(salePrice) : null,
+      featured,
+      image
+    }
+
+    let error
+
+    if (editingId) {
+      const res = await supabase
+        .from("products")
+        .update(payload)
+        .eq("id", editingId)
+
+      error = res.error
+    } else {
+      const res = await supabase
+        .from("products")
+        .insert([payload])
+
+      error = res.error
+    }
+
+    if (error) {
+      console.log(error)
+      alert("Erro: " + error.message)
+      return
+    }
+
+    fetchProducts()
+    resetForm()
+  }
+
   // ❌ DELETE
   const removeProduct = async (id: string) => {
-    await supabase.from("products").delete().eq("id", id)
+    const { error } = await supabase
+      .from("products")
+      .delete()
+      .eq("id", id)
+
+    if (error) {
+      alert("Erro ao deletar")
+      return
+    }
+
     fetchProducts()
+  }
+
+  // ✏️ EDITAR
+  const editProduct = (p: any) => {
+    setEditingId(p.id)
+    setName(p.name || "")
+    setModel(p.model || "")
+    setPrice(p.price?.toString() || "")
+    setSalePrice(p.sale_price?.toString() || "")
+    setFeatured(!!p.featured)
+    setImage(p.image || null)
+    setShowForm(true)
   }
 
   // 🔐 LOGIN UI
   if (!isAuth) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-[#0A0A0A] text-white">
-        <form
-          onSubmit={handleLogin}
-          className="bg-[#111] p-8 rounded-2xl w-full max-w-md"
-        >
+        <form onSubmit={handleLogin} className="bg-[#111] p-8 rounded-2xl w-full max-w-md">
           <h2 className="text-2xl mb-6 text-center">Admin Login</h2>
 
           <input
@@ -148,85 +192,58 @@ export default function AdminPage() {
         onClick={() => setShowForm(!showForm)}
         className="bg-green-500 px-4 py-2 rounded mb-6"
       >
-        Adicionar Produto
+        {editingId ? "Editando..." : "Adicionar Produto"}
       </button>
 
       {showForm && (
         <div className="bg-[#111] p-6 rounded-xl mb-8">
-          <h2 className="text-xl mb-4">Novo Produto</h2>
-
           <div className="grid gap-4">
 
-            <input
-              placeholder="Nome"
-              className="p-3 bg-[#1A1A1A] rounded-lg"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
+            <input placeholder="Nome" className="p-3 bg-[#1A1A1A] rounded"
+              value={name} onChange={e => setName(e.target.value)} />
 
-            <input
-              placeholder="Modelo"
-              className="p-3 bg-[#1A1A1A] rounded-lg"
-              value={model}
-              onChange={(e) => setModel(e.target.value)}
-            />
+            <input placeholder="Modelo" className="p-3 bg-[#1A1A1A] rounded"
+              value={model} onChange={e => setModel(e.target.value)} />
 
-            <input
-              placeholder="Preço Original"
-              className="p-3 bg-[#1A1A1A] rounded-lg"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-            />
+            <input placeholder="Preço Original" className="p-3 bg-[#1A1A1A] rounded"
+              value={price} onChange={e => setPrice(e.target.value)} />
 
-            <input
-              placeholder="Preço Promoção"
-              className="p-3 bg-[#1A1A1A] rounded-lg"
-              value={salePrice}
-              onChange={(e) => setSalePrice(e.target.value)}
-            />
+            <input placeholder="Promoção" className="p-3 bg-[#1A1A1A] rounded"
+              value={salePrice} onChange={e => setSalePrice(e.target.value)} />
 
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
+            <label className="flex gap-2">
+              <input type="checkbox"
                 checked={featured}
-                onChange={(e) => setFeatured(e.target.checked)}
-              />
+                onChange={e => setFeatured(e.target.checked)} />
               Destaque
             </label>
 
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-            />
+            <input type="file" accept="image/*" onChange={handleImageUpload} />
 
-            {image && (
-              <img src={image} className="w-32 h-32 rounded" />
-            )}
+            {image && <img src={image} className="w-32 rounded" />}
 
-            <button
-              onClick={addProduct}
-              className="bg-green-500 p-3 rounded-lg"
-            >
-              Salvar Produto
-            </button>
+            <div className="flex gap-2">
+              <button onClick={saveProduct} className="bg-green-500 p-3 rounded w-full">
+                Salvar
+              </button>
+
+              {editingId && (
+                <button onClick={resetForm} className="bg-gray-500 p-3 rounded">
+                  Cancelar
+                </button>
+              )}
+            </div>
+
           </div>
         </div>
       )}
 
       <div className="bg-[#111] p-6 rounded-xl">
-        <h2 className="mb-4 text-xl">Produtos</h2>
-
         {products.map(p => (
-          <div
-            key={p.id}
-            className="bg-[#1A1A1A] p-4 mb-3 rounded-lg flex justify-between"
-          >
-            <div className="flex gap-4">
+          <div key={p.id} className="bg-[#1A1A1A] p-4 mb-3 rounded flex justify-between">
 
-              {p.image && (
-                <img src={p.image} className="w-16 h-16 rounded" />
-              )}
+            <div className="flex gap-4">
+              {p.image && <img src={p.image} className="w-16 h-16 rounded" />}
 
               <div>
                 <p className="font-bold">{p.name}</p>
@@ -237,25 +254,25 @@ export default function AdminPage() {
                 </p>
 
                 {p.sale_price && (
-                  <p className="text-green-400 font-bold">
+                  <p className="text-green-400">
                     R$ {p.sale_price}
                   </p>
                 )}
 
-                {p.featured && (
-                  <span className="text-yellow-400">
-                    ⭐ Destaque
-                  </span>
-                )}
+                {p.featured && <p className="text-yellow-400">⭐ Destaque</p>}
               </div>
             </div>
 
-            <button
-              onClick={() => removeProduct(p.id)}
-              className="text-red-500"
-            >
-              Excluir
-            </button>
+            <div className="flex gap-3">
+              <button onClick={() => editProduct(p)} className="text-blue-400">
+                Editar
+              </button>
+
+              <button onClick={() => removeProduct(p.id)} className="text-red-500">
+                Excluir
+              </button>
+            </div>
+
           </div>
         ))}
       </div>
