@@ -100,11 +100,11 @@ export default function Footer() {
               </li>
               <li className="flex items-start space-x-3 text-sm">
                 <Phone className="w-4 h-4 text-[#FF6B00] mt-0.5 flex-shrink-0" />
-                <span className="text-gray-400">(11) 99999-9999</span>
+                <span className="text-gray-400">(+55)62 8325-0793</span>
               </li>
               <li className="flex items-start space-x-3 text-sm">
                 <MapPin className="w-4 h-4 text-[#FF6B00] mt-0.5 flex-shrink-0" />
-                <span className="text-gray-400">São Paulo, SP - Brasil</span>
+                <span className="text-gray-400">Goianésia, GO - Brasil</span>
               </li>
             </ul>
           </div>
