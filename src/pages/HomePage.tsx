@@ -13,15 +13,31 @@ export default function HomePage() {
     fetchProducts()
   }, [])
 
-  const fetchProducts = async () => {
-    const { data, error } = await supabase
-      .from('products')
-      .select('name, price, sale_price, image, is_promotion, is_featured')
+ const fetchProducts = async () => {
+  const { data, error } = await supabase
+    .from('products')
+    .select('id, name, price, sale_price, image, model, promo_active, featured, stock')
+    .eq('featured', true) // 👈 AQUI É O SEGREDO
 
-    if (error) {
-      console.log(error)
-      return
-    }
+  if (error) {
+    console.log(error)
+    return
+  }
+
+  const formatted = (data || []).map((p: any) => ({
+    id: p.id,
+    name: p.name,
+    description: p.model,
+    price: Number(p.price),
+    sale_price: p.sale_price ? Number(p.sale_price) : null,
+    image: p.image,
+    promo_active: p.promo_active,
+    featured: p.featured,
+    stock: p.stock || 0
+  }))
+
+  setPromoProducts(formatted)
+}
 
     // 🔥 ADAPTAÇÃO PARA O CARD (SEM QUEBRAR DESIGN)
     const formatted = (data || []).map((p: any) => ({
