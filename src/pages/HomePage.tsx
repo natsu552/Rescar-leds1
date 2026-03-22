@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Filter, X } from 'lucide-react'
-import { useNavigate } from 'react-router-dom' // 🔥 NOVO
 import ProductCard from '@/components/ProductCard'
 
 export default function ProductsPage() {
@@ -9,25 +8,9 @@ export default function ProductsPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [priceRange, setPriceRange] = useState<string>('all')
 
-  const navigate = useNavigate() // 🔥 NOVO
-
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [])
-
-  // 🛒 FUNÇÃO DO CARRINHO
-  const addToCart = (product: any) => {
-    let cart = JSON.parse(localStorage.getItem("cart") || "[]")
-
-    const exists = cart.find((item: any) => item.id === product.id)
-
-    if (!exists) {
-      cart.push(product)
-      localStorage.setItem("cart", JSON.stringify(cart))
-    }
-
-    navigate('/carrinho') // 🔥 REDIRECIONA
-  }
 
   // Mock de produtos
   const allProducts = [
@@ -41,7 +24,7 @@ export default function ProductsPage() {
       category: 'H4',
       promo_active: true,
       stock: 15,
-      out_of_stock: false // 🔥 IMPORTANTE
+      out_of_stock: false
     },
     {
       id: '2',
@@ -77,57 +60,122 @@ export default function ProductsPage() {
       category: 'HB',
       promo_active: true,
       stock: 5,
-      out_of_stock: true // 🔥 exemplo esgotado
+      out_of_stock: true
+    },
+    {
+      id: '5',
+      name: 'LED H1 10000K',
+      description: 'Luz ultra branca, design compacto',
+      price: 249.90,
+      image: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=500',
+      category: 'H1',
+      promo_active: false,
+      stock: 12,
+      out_of_stock: false
+    },
+    {
+      id: '6',
+      name: 'LED H3 Neblina',
+      description: 'Ideal para faróis de neblina',
+      price: 189.90,
+      image: 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=500',
+      category: 'H3',
+      promo_active: false,
+      stock: 18,
+      out_of_stock: false
     }
   ]
 
   return (
     <div className="pt-20 min-h-screen">
-      
-      {/* HEADER */}
+      {/* Header */}
       <div className="bg-gradient-to-r from-[#1A1A1A] to-[#0A0A0A] py-12 border-b border-[#FF6B00]/20">
-        <div className="max-w-7xl mx-auto px-4">
-          <h1 className="text-4xl font-black text-white mb-4">
-            Catálogo de Produtos
-          </h1>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <h1 className="text-4xl md:text-5xl font-black text-white mb-4 glow-orange">
+              Catálogo de Produtos
+            </h1>
+            <p className="text-xl text-gray-400">
+              Encontre o LED perfeito para seu veículo
+            </p>
+          </motion.div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="flex flex-col lg:flex-row gap-8">
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Produtos */}
+          <div className="flex-1">
+            <div className="mb-6 flex items-center justify-between">
+              <p className="text-gray-400">
+                Mostrando <span className="text-white font-semibold">{allProducts.length}</span> produtos
+              </p>
+            </div>
 
-          {allProducts.map((product, index) => (
-            <motion.div
-              key={product.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {allProducts.map((product, index) => (
+                <motion.div
+                  key={product.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                >
+                  <ProductCard product={product} />
+
+                  {/* 🔥 BOTÃO (APENAS VISUAL) */}
+                  <div className="mt-3">
+                    {product.out_of_stock === true ? (
+                      <button className="w-full bg-red-600 p-3 rounded-lg font-bold cursor-not-allowed">
+                        Esgotado
+                      </button>
+                    ) : (
+                      <button className="w-full bg-[#FF6B00] hover:bg-[#FF8C00] p-3 rounded-lg font-bold transition">
+                        Comprar
+                      </button>
+                    )}
+                  </div>
+
+                </motion.div>
+              ))}
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      {/* Mobile Filter Modal */}
+      {isFilterOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <div className="absolute inset-0 bg-black/80" onClick={() => setIsFilterOpen(false)} />
+          <motion.div
+            initial={{ x: '-100%' }}
+            animate={{ x: 0 }}
+            className="absolute left-0 top-0 bottom-0 w-80 bg-[#1A1A1A] p-6 overflow-y-auto"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-white font-bold text-xl">Filtros</h3>
+              <button onClick={() => setIsFilterOpen(false)}>
+                <X className="w-6 h-6 text-white" />
+              </button>
+            </div>
+
+            <button
+              onClick={() => {
+                setSelectedCategory('all')
+                setPriceRange('all')
+                setIsFilterOpen(false)
+              }}
+              className="w-full py-3 bg-[#FF6B00] text-white rounded-lg font-semibold"
             >
-
-              <ProductCard product={product} />
-
-              {/* 🔥 BOTÃO IGUAL HOME */}
-              <div className="mt-3">
-                {product.out_of_stock === true ? (
-                  <button className="w-full bg-red-600 p-3 rounded-lg font-bold cursor-not-allowed">
-                    Esgotado
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => addToCart(product)}
-                    className="w-full bg-[#FF6B00] hover:bg-[#FF8C00] p-3 rounded-lg font-bold transition"
-                  >
-                    Comprar
-                  </button>
-                )}
-              </div>
-
-            </motion.div>
-          ))}
-
+              Aplicar Filtros
+            </button>
+          </motion.div>
         </div>
-
-      </div>
+      )}
     </div>
   )
 }
