@@ -6,7 +6,7 @@ export default function ContactPage() {
 
   const whatsappNumber = "556283250793" // 🔥 troca pelo seu
   const instagramUser = "rescarleds" // 🔥 troca pelo seu
-ram
+  
   const openWhatsApp = () => {
     window.open(`https://wa.me/${whatsappNumber}`, "_blank")
   }
