@@ -16,7 +16,7 @@ export default function HomePage() {
   const fetchProducts = async () => {
     const { data, error } = await supabase
       .from('products')
-      .select('id, name, model, price, sale_price, image, featured, promo_active, out_of_stock')
+      .select('id, name, model, price, sale_price, image, featured, promo_active')
       .eq('featured', true)
 
     if (error) {
@@ -32,8 +32,7 @@ export default function HomePage() {
       sale_price: p.sale_price ? Number(p.sale_price) : null,
       image: p.image,
       promo_active: p.promo_active,
-      featured: p.featured,
-      stock: p.stock || 0
+      featured: p.featured
     }))
 
     setPromoProducts(formatted)
@@ -48,12 +47,10 @@ export default function HomePage() {
             src="https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=1920" 
             className="w-full h-full object-cover opacity-40"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A0A] via-transparent to-[#0A0A0A]"></div>
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0A0A0A] via-transparent to-[#0A0A0A]"></div>
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 text-center">
-          <h1 className="text-5xl md:text-7xl font-black text-white mb-6 glow-orange">
+        <div className="relative z-10 text-center">
+          <h1 className="text-5xl font-black text-white mb-6">
             Ilumine sua presença
           </h1>
 
