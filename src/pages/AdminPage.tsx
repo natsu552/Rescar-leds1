@@ -17,13 +17,13 @@ export default function AdminPage() {
   const [model, setModel] = useState("")
   const [price, setPrice] = useState("")
   const [salePrice, setSalePrice] = useState("")
+  const [promoActive, setPromoActive] = useState(false)
   const [featured, setFeatured] = useState(false)
   const [image, setImage] = useState<string | null>(null)
 
   // 🔐 LOGIN
   const handleLogin = (e: any) => {
     e.preventDefault()
-
     if (email === "rescar@kali" && password === "rescarkali") {
       localStorage.setItem("adminAuth", "true")
       setIsAuth(true)
@@ -68,19 +68,20 @@ export default function AdminPage() {
     reader.readAsDataURL(file)
   }
 
-  // 🧠 RESET
+  // RESET
   const resetForm = () => {
     setEditingId(null)
     setName("")
     setModel("")
     setPrice("")
     setSalePrice("")
+    setPromoActive(false)
     setFeatured(false)
     setImage(null)
     setShowForm(false)
   }
 
-  // ➕ / ✏️ SALVAR
+  // 💾 SALVAR / EDITAR
   const saveProduct = async () => {
     if (!name || !price) {
       alert("Preencha nome e preço")
@@ -91,7 +92,7 @@ export default function AdminPage() {
       name,
       model,
       price: Number(price),
-      sale_price: salePrice ? Number(salePrice) : null,
+      sale_price: promoActive ? Number(salePrice) : null,
       featured,
       image
     }
@@ -145,6 +146,7 @@ export default function AdminPage() {
     setModel(p.model || "")
     setPrice(p.price?.toString() || "")
     setSalePrice(p.sale_price?.toString() || "")
+    setPromoActive(!!p.sale_price)
     setFeatured(!!p.featured)
     setImage(p.image || null)
     setShowForm(true)
@@ -199,22 +201,53 @@ export default function AdminPage() {
         <div className="bg-[#111] p-6 rounded-xl mb-8">
           <div className="grid gap-4">
 
-            <input placeholder="Nome" className="p-3 bg-[#1A1A1A] rounded"
-              value={name} onChange={e => setName(e.target.value)} />
+            <input
+              placeholder="Nome"
+              className="p-3 bg-[#1A1A1A] rounded"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
 
-            <input placeholder="Modelo" className="p-3 bg-[#1A1A1A] rounded"
-              value={model} onChange={e => setModel(e.target.value)} />
+            <input
+              placeholder="Modelo"
+              className="p-3 bg-[#1A1A1A] rounded"
+              value={model}
+              onChange={(e) => setModel(e.target.value)}
+            />
 
-            <input placeholder="Preço Original" className="p-3 bg-[#1A1A1A] rounded"
-              value={price} onChange={e => setPrice(e.target.value)} />
-
-            <input placeholder="Promoção" className="p-3 bg-[#1A1A1A] rounded"
-              value={salePrice} onChange={e => setSalePrice(e.target.value)} />
+            <input
+              type="number"
+              placeholder="Preço Original"
+              className="p-3 bg-[#1A1A1A] rounded"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+            />
 
             <label className="flex gap-2">
-              <input type="checkbox"
+              <input
+                type="checkbox"
+                checked={promoActive}
+                onChange={(e) => setPromoActive(e.target.checked)}
+              />
+              Ativar Promoção
+            </label>
+
+            {promoActive && (
+              <input
+                type="number"
+                placeholder="Preço Promoção"
+                className="p-3 bg-[#1A1A1A] rounded"
+                value={salePrice}
+                onChange={(e) => setSalePrice(e.target.value)}
+              />
+            )}
+
+            <label className="flex gap-2">
+              <input
+                type="checkbox"
                 checked={featured}
-                onChange={e => setFeatured(e.target.checked)} />
+                onChange={(e) => setFeatured(e.target.checked)}
+              />
               Destaque
             </label>
 
@@ -254,12 +287,14 @@ export default function AdminPage() {
                 </p>
 
                 {p.sale_price && (
-                  <p className="text-green-400">
+                  <p className="text-green-400 font-bold">
                     R$ {p.sale_price}
                   </p>
                 )}
 
-                {p.featured && <p className="text-yellow-400">⭐ Destaque</p>}
+                {p.featured && (
+                  <p className="text-yellow-400">⭐ Destaque</p>
+                )}
               </div>
             </div>
 
