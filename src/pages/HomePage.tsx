@@ -16,18 +16,17 @@ export default function HomePage() {
   const fetchProducts = async () => {
     const { data, error } = await supabase
       .from('products')
-      .select('name, price, sale_price, image')
+      .select('id, name, model, price, sale_price, image, promo_active, featured, stock')
 
     if (error) {
       console.log(error)
       return
     }
 
-    // 🔥 ADAPTAÇÃO PARA O CARD (SEM QUEBRAR DESIGN)
     const formatted = (data || []).map((p: any) => ({
       id: p.id,
       name: p.name,
-      description: p.model,
+      description: p.model, // modelo aparece como descrição
       price: Number(p.price),
       sale_price: p.sale_price ? Number(p.sale_price) : null,
       image: p.image,
@@ -36,7 +35,9 @@ export default function HomePage() {
       stock: p.stock || 0
     }))
 
-    setPromoProducts(formatted)
+    // Pega apenas produtos em destaque/promo
+    const filtered = formatted.filter(p => p.promo_active)
+    setPromoProducts(filtered)
   }
 
   return (
@@ -114,18 +115,14 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
-            {promoProducts.map((product, index) => {
+            {promoProducts.map((product) => {
               const discount =
                 product.promo_active && product.sale_price
-                  ? Math.round(
-                      ((product.price - product.sale_price) / product.price) * 100
-                    )
+                  ? Math.round(((product.price - product.sale_price) / product.price) * 100)
                   : 0
 
               return (
                 <motion.div key={product.id} className="relative">
-
-                  {/* 🔥 BADGE DESCONTO */}
                   {discount > 0 && (
                     <div className="absolute top-2 left-2 bg-red-600 text-white text-xs px-2 py-1 rounded font-bold z-10">
                       -{discount}%
