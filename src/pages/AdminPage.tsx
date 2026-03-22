@@ -21,6 +21,10 @@ export default function AdminPage() {
     image: null as string | null
   })
 
+  // 🎨 INPUT STYLE (🔥 PADRÃO PROFISSIONAL)
+  const inputStyle =
+    "w-full p-3 bg-[#0A0A0A] border border-[#333] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:shadow-[0_0_10px_#FF6B00] transition"
+
   // 🔐 LOGIN
   const handleLogin = (e: any) => {
     e.preventDefault()
@@ -49,9 +53,11 @@ export default function AdminPage() {
     setProducts(data || [])
   }
 
-  // 📸 IMG
+  // 📸 IMAGEM
   const handleImage = (e: any) => {
     const file = e.target.files[0]
+    if (!file) return
+
     const reader = new FileReader()
     reader.onloadend = () => {
       setForm({ ...form, image: reader.result as string })
@@ -59,8 +65,13 @@ export default function AdminPage() {
     reader.readAsDataURL(file)
   }
 
-  // 💾 SAVE
+  // 💾 SALVAR
   const save = async () => {
+    if (!form.name || !form.price) {
+      alert("Preencha nome e preço")
+      return
+    }
+
     const payload = {
       ...form,
       price: Number(form.price),
@@ -77,13 +88,14 @@ export default function AdminPage() {
     closeModal()
   }
 
+  // ✏️ EDITAR
   const edit = (p: any) => {
     setEditingId(p.id)
     setForm({
       name: p.name || "",
       model: p.model || "",
-      price: p.price || "",
-      sale_price: p.sale_price || "",
+      price: p.price?.toString() || "",
+      sale_price: p.sale_price?.toString() || "",
       promo_active: !!p.sale_price,
       featured: !!p.featured,
       out_of_stock: !!p.out_of_stock,
@@ -92,6 +104,7 @@ export default function AdminPage() {
     setShowModal(true)
   }
 
+  // ❌ DELETE
   const remove = async (id: string) => {
     await supabase.from("products").delete().eq("id", id)
     fetchProducts()
@@ -112,19 +125,25 @@ export default function AdminPage() {
     })
   }
 
+  // 🔐 LOGIN UI
   if (!isAuth) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-black text-white">
-        <form onSubmit={handleLogin} className="bg-[#111] p-8 rounded-2xl w-full max-w-md">
-          <h2 className="text-2xl mb-6 text-center text-orange-500">Admin</h2>
-          <input name="email" placeholder="Email" className="w-full p-3 mb-4 bg-[#1A1A1A] rounded"/>
-          <input name="password" type="password" placeholder="Senha" className="w-full p-3 mb-6 bg-[#1A1A1A] rounded"/>
-          <button className="w-full bg-orange-500 p-3 rounded font-bold">Entrar</button>
+        <form onSubmit={handleLogin} className="bg-[#111] p-8 rounded-2xl w-full max-w-md border border-orange-500">
+          <h2 className="text-2xl mb-6 text-center text-orange-500 font-bold">Admin</h2>
+
+          <input name="email" placeholder="Email" className={inputStyle} />
+          <input name="password" type="password" placeholder="Senha" className={`${inputStyle} mt-4`} />
+
+          <button className="w-full bg-orange-500 mt-6 p-3 rounded-lg font-bold hover:scale-105 transition">
+            Entrar
+          </button>
         </form>
       </div>
     )
   }
 
+  // 🧠 ADMIN
   return (
     <div className="bg-black min-h-screen text-white p-10">
 
@@ -140,37 +159,45 @@ export default function AdminPage() {
         + Novo Produto
       </button>
 
-      {/* 🧠 LISTA */}
+      {/* LISTA */}
       <div className="grid gap-4">
         {products.map(p => (
           <div key={p.id} className="bg-[#111] p-4 rounded-xl flex justify-between items-center">
 
             <div className="flex gap-4 items-center">
-              <img src={p.image} className="w-16 h-16 rounded object-cover"/>
+              {p.image && (
+                <img src={p.image} className="w-16 h-16 rounded object-cover"/>
+              )}
+
               <div>
                 <p className="font-bold">{p.name}</p>
                 <p className="text-gray-400">{p.model}</p>
 
-                {p.out_of_stock && (
-                  <p className="text-red-500 font-bold">ESGOTADO</p>
+                <p className="text-gray-500 line-through">R$ {p.price}</p>
+
+                {p.sale_price && (
+                  <p className="text-green-400 font-bold">R$ {p.sale_price}</p>
                 )}
 
-                {p.featured && (
-                  <p className="text-orange-400">⭐ Destaque</p>
-                )}
+                {p.featured && <p className="text-orange-400">⭐ Destaque</p>}
+                {p.out_of_stock && <p className="text-red-500 font-bold">ESGOTADO</p>}
               </div>
             </div>
 
             <div className="flex gap-3">
-              <button onClick={() => edit(p)} className="text-orange-400">Editar</button>
-              <button onClick={() => remove(p.id)} className="text-red-500">Excluir</button>
+              <button onClick={() => edit(p)} className="text-orange-400">
+                Editar
+              </button>
+              <button onClick={() => remove(p.id)} className="text-red-500">
+                Excluir
+              </button>
             </div>
 
           </div>
         ))}
       </div>
 
-      {/* 🔥 MODAL */}
+      {/* MODAL */}
       {showModal && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
 
@@ -180,54 +207,71 @@ export default function AdminPage() {
               {editingId ? "Editar Produto" : "Novo Produto"}
             </h2>
 
-            <input placeholder="Nome" className="input" value={form.name}
-              onChange={e => setForm({ ...form, name: e.target.value })} />
+            <input
+              placeholder="Nome"
+              className={inputStyle}
+              value={form.name}
+              onChange={e => setForm({ ...form, name: e.target.value })}
+            />
 
-            <input placeholder="Modelo" className="input" value={form.model}
-              onChange={e => setForm({ ...form, model: e.target.value })} />
+            <input
+              placeholder="Modelo"
+              className={inputStyle}
+              value={form.model}
+              onChange={e => setForm({ ...form, model: e.target.value })}
+            />
 
-            <input type="number" placeholder="Preço" className="input"
+            <input
+              type="number"
+              placeholder="Preço"
+              className={inputStyle}
               value={form.price}
-              onChange={e => setForm({ ...form, price: e.target.value })} />
+              onChange={e => setForm({ ...form, price: e.target.value })}
+            />
 
-            {/* TOGGLES */}
-            <label className="flex justify-between">
+            <label className="flex justify-between text-sm">
               Promoção
-              <input type="checkbox"
+              <input
+                type="checkbox"
                 checked={form.promo_active}
                 onChange={e => setForm({ ...form, promo_active: e.target.checked })}
               />
             </label>
 
             {form.promo_active && (
-              <input type="number" placeholder="Preço Promoção" className="input"
+              <input
+                type="number"
+                placeholder="Preço Promoção"
+                className={inputStyle}
                 value={form.sale_price}
                 onChange={e => setForm({ ...form, sale_price: e.target.value })}
               />
             )}
 
-            <label className="flex justify-between">
+            <label className="flex justify-between text-sm">
               Destaque
-              <input type="checkbox"
+              <input
+                type="checkbox"
                 checked={form.featured}
                 onChange={e => setForm({ ...form, featured: e.target.checked })}
               />
             </label>
 
-            <label className="flex justify-between">
+            <label className="flex justify-between text-sm">
               Esgotado
-              <input type="checkbox"
+              <input
+                type="checkbox"
                 checked={form.out_of_stock}
                 onChange={e => setForm({ ...form, out_of_stock: e.target.checked })}
               />
             </label>
 
-            <input type="file" onChange={handleImage} />
+            <input type="file" onChange={handleImage} className="text-sm" />
 
-            {form.image && <img src={form.image} className="w-24 rounded"/>}
+            {form.image && <img src={form.image} className="w-24 rounded" />}
 
             <div className="flex gap-3">
-              <button onClick={save} className="bg-orange-500 w-full p-3 rounded font-bold">
+              <button onClick={save} className="bg-orange-500 w-full p-3 rounded font-bold hover:scale-105 transition">
                 Salvar
               </button>
               <button onClick={closeModal} className="bg-gray-600 w-full p-3 rounded">
