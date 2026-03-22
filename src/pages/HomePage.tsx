@@ -16,14 +16,14 @@ export default function HomePage() {
   const fetchProducts = async () => {
     const { data, error } = await supabase
       .from('products')
-      .select('name, price, sale_price, image, featured')
-      .eq('featured', true) 
+      .select('id, name, model, price, sale_price, image, featured, promo_active, out_of_stock') // 🔥 corrigido
+      .eq('featured', true)
+
     if (error) {
       console.log(error)
       return
     }
 
-    // 🔥 ADAPTAÇÃO PARA O CARD (SEM QUEBRAR DESIGN)
     const formatted = (data || []).map((p: any) => ({
       id: p.id,
       name: p.name,
@@ -33,10 +33,28 @@ export default function HomePage() {
       image: p.image,
       promo_active: p.promo_active,
       featured: p.featured,
+      out_of_stock: p.out_of_stock === true, // 🔥 garante boolean correto
       stock: p.stock || 0
     }))
 
     setPromoProducts(formatted)
+  }
+
+  // 🛒 CARRINHO
+  const addToCart = (product: any) => {
+    let cart = JSON.parse(localStorage.getItem("cart") || "[]")
+
+    const exists = cart.find((item: any) => item.id === product.id)
+
+    if (exists) {
+      alert("Produto já está no carrinho 🛒")
+      return
+    }
+
+    cart.push(product)
+    localStorage.setItem("cart", JSON.stringify(cart))
+
+    alert("Adicionado ao carrinho 🚀")
   }
 
   return (
@@ -99,7 +117,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Produtos em Promoção */}
+      {/* Produtos */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4">
 
@@ -107,9 +125,6 @@ export default function HomePage() {
             <h2 className="text-4xl md:text-5xl font-black text-white mb-4 glow-orange">
               Ofertas Especiais
             </h2>
-            <p className="text-xl text-gray-400">
-              Produtos selecionados com até 40% de desconto
-            </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -125,7 +140,6 @@ export default function HomePage() {
               return (
                 <motion.div key={product.id} className="relative">
 
-                  {/* 🔥 BADGE DESCONTO */}
                   {discount > 0 && (
                     <div className="absolute top-2 left-2 bg-red-600 text-white text-xs px-2 py-1 rounded font-bold z-10">
                       -{discount}%
@@ -133,6 +147,23 @@ export default function HomePage() {
                   )}
 
                   <ProductCard product={product} />
+
+                  {/* 🔥 BOTÃO NOVO */}
+                  <div className="mt-3">
+                    {product.out_of_stock === true ? (
+                      <button className="w-full bg-red-600 p-2 rounded font-bold cursor-not-allowed">
+                        Esgotado
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => addToCart(product)}
+                        className="w-full bg-[#FF6B00] hover:bg-[#FF8C00] p-2 rounded font-bold transition"
+                      >
+                        Comprar
+                      </button>
+                    )}
+                  </div>
+
                 </motion.div>
               )
             })}
