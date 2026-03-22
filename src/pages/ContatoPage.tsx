@@ -4,9 +4,9 @@ import { MessageCircle, Instagram } from 'lucide-react'
 
 export default function ContactPage() {
 
-  const whatsappNumber = "5562999999999" // 🔥 troca pelo seu
-  const instagramUser = "seuinstagram" // 🔥 troca pelo seu
-
+  const whatsappNumber = "556283250793" // 🔥 troca pelo seu
+  const instagramUser = "rescarleds" // 🔥 troca pelo seu
+ram
   const openWhatsApp = () => {
     window.open(`https://wa.me/${whatsappNumber}`, "_blank")
   }
