@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import {ShoppingCart, Menu, X, Search, User} from 'lucide-react'
+import { ShoppingCart, Menu, X, Search, User } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useCart } from '@/context/CartContext'
 
@@ -135,6 +135,7 @@ export default function Navbar() {
               >
                 Painel
               </Link>
+
               <div className="pt-4 border-t border-[#FF6B00]/20 space-y-3">
                 <form onSubmit={handleSearch} className="flex gap-2">
                   <input
@@ -163,7 +164,7 @@ export default function Navbar() {
             </div>
           </motion.div>
         )}
-      </AnimatePresenc>
+      </AnimatePresence>
     </nav>
   )
 }
