@@ -16,8 +16,8 @@ export default function HomePage() {
   const fetchProducts = async () => {
     const { data, error } = await supabase
       .from('products')
-      .select(' image, featured')
-
+      .select('name, price, sale_price, image, featured')
+      .eq('featured', true) 
     if (error) {
       console.log(error)
       return
