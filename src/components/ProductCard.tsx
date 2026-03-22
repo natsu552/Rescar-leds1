@@ -9,7 +9,7 @@ interface Product {
   name: string
   description: string
   price: number
-  sale_price?: number | null
+  sale_price?: number
   image: string
   promo_active?: boolean
   stock: number
@@ -20,7 +20,8 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const { addItem } = useCart()
+  // resto do código permanece igual
+}
 
   // 🔥 CALCULO DESCONTO
   const discount =
