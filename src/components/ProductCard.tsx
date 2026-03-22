@@ -20,14 +20,10 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  // resto do código permanece igual
-}
-
-  // 🔥 CALCULO DESCONTO
-  const discount =
-    product.sale_price
-      ? Math.round(((product.price - product.sale_price) / product.price) * 100)
-      : 0
+  const { addItem } = useCart()
+  const discount = product.sale_price
+    ? Math.round(((product.price - product.sale_price) / product.price) * 100)
+    : 0
 
   const handleAddToCart = () => {
     if (product.stock <= 0) {
@@ -42,7 +38,6 @@ export default function ProductCard({ product }: ProductCardProps) {
       image: product.image,
       quantity: 1
     })
-
     toast.success('Produto adicionado ao carrinho!')
   }
 
@@ -51,28 +46,24 @@ export default function ProductCard({ product }: ProductCardProps) {
       whileHover={{ y: -8 }}
       className="bg-[#1A1A1A] rounded-xl overflow-hidden border border-[#FF6B00]/20 hover:border-[#FF6B00] transition-all duration-300 group"
     >
-      {/* IMAGEM */}
+      {/* Image */}
       <div className="relative aspect-square overflow-hidden bg-black">
         <img
-          src={product.image || 'https://via.placeholder.com/300'}
+          src={product.image}
           alt={product.name}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+          loading="lazy"
         />
-
-        {/* 🔥 DESCONTO */}
         {product.promo_active && discount > 0 && (
-          <div className="absolute top-3 right-3 bg-[#FF0000] text-white px-3 py-1 rounded-full text-sm font-bold">
+          <div className="absolute top-3 right-3 bg-[#FF0000] text-white px-3 py-1 rounded-full text-sm font-bold glow-orange-strong">
             -{discount}%
           </div>
         )}
-
-        {/* ESTOQUE */}
         {product.stock <= 5 && product.stock > 0 && (
           <div className="absolute top-3 left-3 bg-[#FF6B00] text-white px-3 py-1 rounded-full text-xs font-bold">
             Últimas unidades
           </div>
         )}
-
         {product.stock <= 0 && (
           <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
             <span className="text-white font-bold text-lg">Esgotado</span>
@@ -80,9 +71,9 @@ export default function ProductCard({ product }: ProductCardProps) {
         )}
       </div>
 
-      {/* CONTEÚDO */}
+      {/* Content */}
       <div className="p-4">
-        {/* AVALIAÇÃO */}
+        {/* Rating */}
         <div className="flex items-center space-x-1 mb-2">
           {[...Array(5)].map((_, i) => (
             <Star key={i} className="w-4 h-4 fill-[#FF6B00] text-[#FF6B00]" />
@@ -90,17 +81,17 @@ export default function ProductCard({ product }: ProductCardProps) {
           <span className="text-gray-400 text-sm ml-2">(4.9)</span>
         </div>
 
-        {/* NOME */}
+        {/* Name */}
         <h3 className="text-white font-bold text-lg mb-1 group-hover:text-[#FF6B00] transition-colors duration-200">
-          {product.name || 'Produto'}
+          {product.name}
         </h3>
 
-        {/* DESCRIÇÃO */}
+        {/* Description */}
         <p className="text-gray-400 text-sm mb-4 line-clamp-2">
-          {product.description || 'Sem descrição'}
+          {product.description}
         </p>
 
-        {/* PREÇO */}
+        {/* Price */}
         <div className="flex items-end justify-between mb-4">
           <div>
             {product.sale_price ? (
@@ -120,20 +111,18 @@ export default function ProductCard({ product }: ProductCardProps) {
           </div>
         </div>
 
-        {/* BOTÃO */}
+        {/* Button */}
         <button
           onClick={handleAddToCart}
           disabled={product.stock <= 0}
           className={`w-full py-3 rounded-lg font-bold flex items-center justify-center space-x-2 transition-all duration-300 ${
             product.stock <= 0
               ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
-              : 'bg-[#FF6B00] hover:bg-[#FF8C00] text-white'
+              : 'bg-[#FF6B00] hover:bg-[#FF8C00] text-white hover:glow-orange-strong'
           }`}
         >
           <ShoppingCart className="w-5 h-5" />
-          <span>
-            {product.stock <= 0 ? 'Esgotado' : 'Adicionar ao Carrinho'}
-          </span>
+          <span>{product.stock <= 0 ? 'Esgotado' : 'Adicionar ao Carrinho'}</span>
         </button>
       </div>
     </motion.div>
