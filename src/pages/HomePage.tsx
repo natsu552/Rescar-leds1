@@ -13,33 +13,20 @@ export default function HomePage() {
     fetchProducts()
   }, [])
 
- const fetchProducts = async () => {
-  const { data, error } = await supabase
-    .from('products')
-    .select('id, name, price, sale_price, image, model, promo_active, featured, stock')
-    .eq('featured', true) // 👈 AQUI É O SEGREDO
+  const fetchProducts = async () => {
+    const { data, error } = await supabase
+      .from('products')
+      .select('id, name, price, sale_price, image, model, promo_active, featured, stock')
+      .eq('featured', true) // 🔥 MOSTRA SÓ DESTAQUES
 
-  if (error) {
-    console.log(error)
-    return
-  }
+    console.log('DATA:', data)
+    console.log('ERROR:', error)
 
-  const formatted = (data || []).map((p: any) => ({
-    id: p.id,
-    name: p.name,
-    description: p.model,
-    price: Number(p.price),
-    sale_price: p.sale_price ? Number(p.sale_price) : null,
-    image: p.image,
-    promo_active: p.promo_active,
-    featured: p.featured,
-    stock: p.stock || 0
-  }))
+    if (error) {
+      console.log(error)
+      return
+    }
 
-  setPromoProducts(formatted)
-}
-
-    // 🔥 ADAPTAÇÃO PARA O CARD (SEM QUEBRAR DESIGN)
     const formatted = (data || []).map((p: any) => ({
       id: p.id,
       name: p.name,
@@ -115,16 +102,16 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Produtos em Promoção */}
+      {/* Produtos em Destaque */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4">
 
           <div className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-black text-white mb-4 glow-orange">
-              Ofertas Especiais
+              Produtos em Destaque
             </h2>
             <p className="text-xl text-gray-400">
-              Produtos selecionados com até 40% de desconto
+              Os melhores produtos selecionados para você
             </p>
           </div>
 
@@ -139,9 +126,8 @@ export default function HomePage() {
                   : 0
 
               return (
-                <motion.div key={product.id} className="relative">
+                <motion.div key={product.id || index} className="relative">
 
-                  {/* 🔥 BADGE DESCONTO */}
                   {discount > 0 && (
                     <div className="absolute top-2 left-2 bg-red-600 text-white text-xs px-2 py-1 rounded font-bold z-10">
                       -{discount}%
