@@ -1,8 +1,8 @@
 import type { UserConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import { defineConfig } from 'vite'
+import path from 'path'
 
-// https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   let build: UserConfig['build'], esbuild: UserConfig['esbuild'], define: UserConfig['define']
 
@@ -36,7 +36,7 @@ export default defineConfig(({ mode }) => {
     define,
     resolve: {
       alias: {
-        '@': '/src',
+        '@': path.resolve(__dirname, './src'),
       }
     },
     optimizeDeps: {
