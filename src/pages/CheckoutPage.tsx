@@ -20,6 +20,7 @@ export default function CheckoutPage() {
 
   const [shippingOptions, setShippingOptions] = useState<any[]>([])
   const [selectedShipping, setSelectedShipping] = useState<any>(null)
+  const [loadingCep, setLoadingCep] = useState(false)
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -28,62 +29,87 @@ export default function CheckoutPage() {
     }
   }, [items, navigate])
 
-  // 🔥 CALCULAR FRETE
-  const handleCep = async (cep: string) => {
-    setForm({ ...form, cep })
+  // 🚚 CALCULAR FRETE
+  const handleCep = async (value: string) => {
+    const cep = value.replace(/\D/g, '') // remove tudo que não for número
+    setForm(prev => ({ ...prev, cep }))
 
-    if (cep.length === 8) {
-      try {
-        const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`)
-        const data = await res.json()
+    if (cep.length !== 8) return
 
-        if (!data.erro) {
-          setForm(prev => ({
-            ...prev,
-            address: data.logradouro,
-            city: data.localidade,
-            state: data.uf
-          }))
+    setLoadingCep(true)
 
-          // 🔥 FRETES
-          let economico = 25
-          let expresso = 45
+    try {
+      const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`)
+      const data = await res.json()
 
-          if (data.uf === 'GO') {
-            economico = 10
-            expresso = 20
-          } else if (['SP', 'MG'].includes(data.uf)) {
-            economico = 20
-            expresso = 35
-          }
-
-          // 🎯 FRETE GRÁTIS
-          if (total > 299) {
-            economico = 0
-          }
-
-          const options = [
-            {
-              id: 'economico',
-              name: 'Frete Econômico',
-              price: economico,
-              time: '5 a 10 dias'
-            },
-            {
-              id: 'expresso',
-              name: 'Frete Expresso',
-              price: expresso,
-              time: '1 a 3 dias'
-            }
-          ]
-
-          setShippingOptions(options)
-          setSelectedShipping(options[0]) // padrão
-        }
-      } catch (err) {
-        console.log(err)
+      if (data.erro) {
+        alert('CEP inválido')
+        setLoadingCep(false)
+        return
       }
+
+      setForm(prev => ({
+        ...prev,
+        address: data.logradouro || '',
+        city: data.localidade || '',
+        state: data.uf || ''
+      }))
+
+      // 📦 FRETE BASEADO NA REGIÃO (origem GO)
+      const uf = data.uf
+      let economico = 0
+      let expresso = 0
+
+      if (uf === 'GO') {
+        economico = 12
+        expresso = 22
+      } else if (['DF', 'MT', 'MS'].includes(uf)) {
+        economico = 18
+        expresso = 30
+      } else if (['SP', 'MG', 'RJ', 'ES'].includes(uf)) {
+        economico = 22
+        expresso = 38
+      } else if (['PR', 'SC', 'RS'].includes(uf)) {
+        economico = 28
+        expresso = 45
+      } else if (
+        ['BA','PE','CE','RN','PB','AL','SE','PI','MA'].includes(uf)
+      ) {
+        economico = 35
+        expresso = 55
+      } else {
+        economico = 45
+        expresso = 70
+      }
+
+      // 🎯 FRETE GRÁTIS
+      if (total > 299) {
+        economico = 0
+      }
+
+      const options = [
+        {
+          id: 'economico',
+          name: 'Frete Econômico',
+          price: economico,
+          time: '5 a 10 dias úteis'
+        },
+        {
+          id: 'expresso',
+          name: 'Frete Expresso',
+          price: expresso,
+          time: '1 a 4 dias úteis'
+        }
+      ]
+
+      setShippingOptions(options)
+      setSelectedShipping(options[0])
+    } catch (err) {
+      console.log(err)
+      alert('Erro ao buscar CEP')
     }
+
+    setLoadingCep(false)
   }
 
   const handleSubmit = () => {
@@ -100,24 +126,19 @@ export default function CheckoutPage() {
 
       {/* HEADER */}
       <div className="bg-gradient-to-r from-[#1A1A1A] to-[#0A0A0A] py-12 border-b border-[#FF6B00]/20">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center gap-3">
-            <Lock className="w-8 h-8 text-[#FF6B00]" />
-            <h1 className="text-4xl font-black text-white">
-              Checkout Seguro
-            </h1>
-          </div>
+        <div className="max-w-7xl mx-auto px-4 flex items-center gap-3">
+          <Lock className="w-8 h-8 text-[#FF6B00]" />
+          <h1 className="text-4xl font-black text-white">
+            Checkout Seguro
+          </h1>
         </div>
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-12 grid lg:grid-cols-2 gap-8">
 
-        {/* 🧾 FORM */}
+        {/* FORM */}
         <div className="bg-[#1A1A1A] p-6 rounded-xl border border-[#FF6B00]/20">
-
-          <h2 className="text-white text-xl font-bold mb-6">
-            Endereço
-          </h2>
+          <h2 className="text-white text-xl font-bold mb-6">Endereço</h2>
 
           <div className="grid gap-4">
 
@@ -128,11 +149,17 @@ export default function CheckoutPage() {
               onChange={e => handleCep(e.target.value)}
             />
 
+            {loadingCep && (
+              <p className="text-yellow-400 text-sm">Buscando CEP...</p>
+            )}
+
             <input
               placeholder="Endereço"
               className="input"
               value={form.address}
-              onChange={e => setForm({ ...form, address: e.target.value })}
+              onChange={e =>
+                setForm({ ...form, address: e.target.value })
+              }
             />
 
             <div className="grid grid-cols-2 gap-4">
@@ -140,21 +167,21 @@ export default function CheckoutPage() {
                 placeholder="Cidade"
                 className="input"
                 value={form.city}
+                readOnly
               />
 
               <input
                 placeholder="Estado"
                 className="input"
                 value={form.state}
+                readOnly
               />
             </div>
-
           </div>
 
-          {/* 🚚 FRETES */}
+          {/* FRETE */}
           {shippingOptions.length > 0 && (
             <div className="mt-6">
-
               <h3 className="text-white font-bold mb-4">
                 Escolha o Frete
               </h3>
@@ -181,15 +208,12 @@ export default function CheckoutPage() {
                   </div>
                 ))}
               </div>
-
             </div>
           )}
-
         </div>
 
-        {/* 🛒 RESUMO */}
+        {/* RESUMO */}
         <div className="bg-[#1A1A1A] p-6 rounded-xl border border-[#FF6B00]/20">
-
           <h2 className="text-white text-xl font-bold mb-6">
             Seu Pedido
           </h2>
@@ -203,7 +227,6 @@ export default function CheckoutPage() {
             ))}
           </div>
 
-          {/* FRETE */}
           {selectedShipping && (
             <div className="flex justify-between text-gray-300 mb-4">
               <span>Frete</span>
@@ -211,7 +234,6 @@ export default function CheckoutPage() {
             </div>
           )}
 
-          {/* TOTAL */}
           <div className="border-t border-gray-700 pt-4 mb-6">
             <div className="flex justify-between text-white text-xl font-bold">
               <span>Total</span>
@@ -227,12 +249,10 @@ export default function CheckoutPage() {
           >
             Finalizar Compra
           </button>
-
         </div>
-
       </div>
 
-      {/* 🎨 INPUT STYLE */}
+      {/* STYLE */}
       <style>
         {`
           .input {
@@ -249,7 +269,6 @@ export default function CheckoutPage() {
           }
         `}
       </style>
-
     </div>
   )
 }
