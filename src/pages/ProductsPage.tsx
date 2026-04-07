@@ -16,7 +16,7 @@ export default function ProductsPage() {
     window.scrollTo(0, 0)
   }, [])
 
-  // 🔥 BUSCAR PRODUTOS COM FILTRO DIRETO NO SUPABASE
+  // 🔥 BUSCA COM FILTRO FLEXÍVEL (FUNCIONA COM QUALQUER BANCO)
   const fetchProducts = async () => {
     let query = supabase
       .from('products')
@@ -24,18 +24,22 @@ export default function ProductsPage() {
 
     // 🔹 FILTRO TIPO (H1, H4...)
     if (selectedCategory !== 'all') {
-      query = query.ilike('model', `%${selectedCategory}%`)
+      query = query.or(
+        `name.ilike.%${selectedCategory}%,model.ilike.%${selectedCategory}%`
+      )
     }
 
-    // 🔹 FILTRO MODELO (RESCAR etc)
+    // 🔹 FILTRO MODELO
     if (selectedModel !== 'all') {
-      query = query.ilike('model', `%${selectedModel}%`)
+      query = query.or(
+        `name.ilike.%${selectedModel}%,model.ilike.%${selectedModel}%`
+      )
     }
 
     const { data, error } = await query
 
     if (error) {
-      console.log(error)
+      console.log('Erro Supabase:', error)
       return
     }
 
@@ -52,7 +56,7 @@ export default function ProductsPage() {
     setAllProducts(formatted)
   }
 
-  // 🔥 ATUALIZA AUTOMATICAMENTE AO MUDAR FILTRO
+  // 🔥 ATUALIZA AUTOMATICAMENTE
   useEffect(() => {
     fetchProducts()
   }, [selectedCategory, selectedModel])
@@ -84,7 +88,7 @@ export default function ProductsPage() {
                 Filtros
               </h3>
 
-              {/* 🔹 TIPO DE LÂMPADA */}
+              {/* 🔹 TIPO */}
               <div className="mb-6">
                 <h4 className="text-white font-semibold mb-3">
                   Tipo da Lâmpada
@@ -174,17 +178,16 @@ export default function ProductsPage() {
         </div>
       </div>
 
-      {/* MOBILE FILTER */}
+      {/* MOBILE */}
       {isFilterOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-black/80" onClick={() => setIsFilterOpen(false)} />
-
           <motion.div
             initial={{ x: '-100%' }}
             animate={{ x: 0 }}
-            className="absolute left-0 top-0 bottom-0 w-80 bg-[#1A1A1A] p-6 overflow-y-auto"
+            className="absolute left-0 top-0 bottom-0 w-80 bg-[#1A1A1A] p-6"
           >
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex justify-between mb-6">
               <h3 className="text-white font-bold text-xl">Filtros</h3>
               <button onClick={() => setIsFilterOpen(false)}>
                 <X className="w-6 h-6 text-white" />
