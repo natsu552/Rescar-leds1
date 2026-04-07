@@ -37,7 +37,7 @@ export default function AccountPage() {
           animate={{ opacity: 1, y: 0 }}
         >
           <h1 className="text-4xl md:text-5xl font-black text-white mb-8 glow-orange">
-            Minha Conta
+            Minhaa Conta
           </h1>
 
           {/* Card Principal */}
@@ -112,3 +112,4 @@ export default function AccountPage() {
     </div>
   )
 }
+

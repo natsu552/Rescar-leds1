@@ -103,7 +103,7 @@ export default function ProductCard({ product }: { product: Product }) {
           }`}
         >
           <ShoppingCart size={18} />
-          {product.stock <= 0 ? 'Esgotado' : 'Adicionar ao Carrinho'}
+          {product.stock <= 0 ? 'Esgotado' : 'Adicionare ao Carrinho'}
         </button>
       </div>
     </motion.div>
