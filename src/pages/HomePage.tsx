@@ -130,7 +130,7 @@ export default function HomePage() {
                   )}
 
                   {/* 🔥 CARD ORIGINAL */}
-                  <ProductCard product={product} />
+                
 
                 </motion.div>
               )
