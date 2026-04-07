@@ -1,6 +1,6 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import { ShoppingCart, Star } from 'lucide-react'
+import { ShoppingCart } from 'lucide-react'
 import { useCart } from '@/context/CartContext'
 import toast from 'react-hot-toast'
 
@@ -22,6 +22,8 @@ export default function ProductCard({ product }: { product: Product }) {
     ? Math.round(((product.price - product.sale_price) / product.price) * 100)
     : 0
 
+  const finalPrice = product.sale_price || product.price
+
   const handleAddToCart = () => {
     if (product.stock <= 0) {
       toast.error('Produto esgotado')
@@ -31,7 +33,7 @@ export default function ProductCard({ product }: { product: Product }) {
     addItem({
       id: product.id,
       name: product.name,
-      price: product.sale_price || product.price,
+      price: finalPrice,
       image: product.image,
       quantity: 1
     })
@@ -103,7 +105,7 @@ export default function ProductCard({ product }: { product: Product }) {
           }`}
         >
           <ShoppingCart size={18} />
-          {product.stock <= 0 ? 'Esgotado' : 'Adicionare ao Carrinho'}
+          {product.stock <= 0 ? 'Esgotado' : 'Adicionar ao Carrinho'}
         </button>
       </div>
     </motion.div>
