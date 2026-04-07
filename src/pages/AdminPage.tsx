@@ -21,11 +21,9 @@ export default function AdminPage() {
     image: null as string | null
   })
 
-  // 🎨 INPUT STYLE (🔥 PADRÃO PROFISSIONAL)
   const inputStyle =
     "w-full p-3 bg-[#0A0A0A] border border-[#333] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 focus:shadow-[0_0_10px_#FF6B00] transition"
 
-  // 🔐 LOGIN
   const handleLogin = (e: any) => {
     e.preventDefault()
     if (e.target.email.value === "rescar@kali" && e.target.password.value === "rescarkali") {
@@ -39,7 +37,6 @@ export default function AdminPage() {
     setIsAuth(false)
   }
 
-  // 📥 BUSCAR
   useEffect(() => {
     if (isAuth) fetchProducts()
   }, [isAuth])
@@ -53,7 +50,6 @@ export default function AdminPage() {
     setProducts(data || [])
   }
 
-  // 📸 IMAGEM
   const handleImage = (e: any) => {
     const file = e.target.files[0]
     if (!file) return
@@ -65,7 +61,6 @@ export default function AdminPage() {
     reader.readAsDataURL(file)
   }
 
-  // 💾 SALVAR
   const save = async () => {
     if (!form.name || !form.price) {
       alert("Preencha nome e preço")
@@ -88,7 +83,6 @@ export default function AdminPage() {
     closeModal()
   }
 
-  // ✏️ EDITAR
   const edit = (p: any) => {
     setEditingId(p.id)
     setForm({
@@ -104,7 +98,6 @@ export default function AdminPage() {
     setShowModal(true)
   }
 
-  // ❌ DELETE
   const remove = async (id: string) => {
     await supabase.from("products").delete().eq("id", id)
     fetchProducts()
@@ -125,7 +118,6 @@ export default function AdminPage() {
     })
   }
 
-  // 🔐 LOGIN UI
   if (!isAuth) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-black text-white">
@@ -143,7 +135,6 @@ export default function AdminPage() {
     )
   }
 
-  // 🧠 ADMIN
   return (
     <div className="bg-black min-h-screen text-white p-10">
 
@@ -159,7 +150,6 @@ export default function AdminPage() {
         + Novo Produto
       </button>
 
-      {/* LISTA */}
       <div className="grid gap-4">
         {products.map(p => (
           <div key={p.id} className="bg-[#111] p-4 rounded-xl flex justify-between items-center">
@@ -214,12 +204,17 @@ export default function AdminPage() {
         onChange={e => setForm({ ...form, name: e.target.value })}
       />
 
-      <input
-        placeholder="Modelo"
+      {/* 🔥 AQUI FOI ALTERADO */}
+      <select
         className={inputStyle + " p-2 text-sm"}
         value={form.model}
         onChange={e => setForm({ ...form, model: e.target.value })}
-      />
+      >
+        <option value="">Selecione o modelo</option>
+        <option value="LED MULTICOLOR RESCAR">LED MULTICOLOR RESCAR</option>
+        <option value="LED RESCAR">LED RESCAR</option>
+        <option value="DUAL VISION">DUAL VISION</option>
+      </select>
 
       <input
         type="number"
