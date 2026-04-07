@@ -59,13 +59,7 @@ export default function Navbar() {
             >
               <Search className="w-5 h-5" />
             </Link>
-            
-            <Link 
-              to="/conta"
-              className="hidden md:block p-2 text-white hover:text-[#FF6B00] transition-colors duration-200"
-            >
-              <User className="w-5 h-5" />
-            </Link>
+          
 
             <Link 
               to="/carrinho" 
