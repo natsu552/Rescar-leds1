@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowRight, Zap, Shield, Truck, Star } from 'lucide-react'
-import ProductCard from './components/ProductCard'
 import { supabase } from '@/lib/supabase'
 
 export default function HomePage() {
