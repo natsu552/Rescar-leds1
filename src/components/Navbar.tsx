@@ -54,7 +54,7 @@ export default function Navbar() {
           {/* Right Actions */}
           <div className="flex items-center space-x-4">
             <Link 
-              to="/busca"
+              to="/produtos"
               className="hidden md:block p-2 text-white hover:text-[#FF6B00] transition-colors duration-200"
             >
               <Search className="w-5 h-5" />
