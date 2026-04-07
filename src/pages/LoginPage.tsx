@@ -14,26 +14,39 @@ export default function LoginPage() {
   const handleLogin = async (e: any) => {
     e.preventDefault()
 
+    const cleanEmail = email.trim().toLowerCase()
+    const cleanPassword = password.trim()
+
     // ADMIN
-    if (email === "rescar@kali" && password === "rescarkali") {
+    if (cleanEmail === "rescar@kali" && cleanPassword === "rescarkali") {
       localStorage.setItem("adminAuth", "true")
       navigate("/admin")
       return
     }
 
+    // 🔥 BUSCAR USUÁRIO
     const { data, error } = await supabase
       .from("users")
       .select("*")
-      .eq("email", email)
-      .eq("password", password)
-      .single()
+      .eq("email", cleanEmail)
 
-    if (error || !data) {
-      alert("Usuário não encontrado")
+    if (error || !data || data.length === 0) {
+      alert("Conta não encontrada")
       return
     }
 
-    localStorage.setItem("user", JSON.stringify(data))
+    // 🔑 VERIFICAR SENHA
+    const user = data.find((u: any) => u.password === cleanPassword)
+
+    if (!user) {
+      alert("Senha incorreta")
+      return
+    }
+
+    // 💾 SALVAR LOGIN
+    localStorage.setItem("user", JSON.stringify(user))
+
+    alert("Login realizado!")
     navigate("/")
   }
 
@@ -41,16 +54,35 @@ export default function LoginPage() {
   const handleRegister = async (e: any) => {
     e.preventDefault()
 
-    const { error } = await supabase.from("users").insert([
-      { email, password }
-    ])
+    const cleanEmail = email.trim().toLowerCase()
+    const cleanPassword = password.trim()
 
-    if (error) {
-      alert("Erro ao cadastrar (email já existe?)")
+    // 🔍 VERIFICAR SE JÁ EXISTE
+    const { data: existing } = await supabase
+      .from("users")
+      .select("*")
+      .eq("email", cleanEmail)
+
+    if (existing && existing.length > 0) {
+      alert("Esse email já está cadastrado")
       return
     }
 
-    alert("Conta criada!")
+    // 💾 CRIAR USUÁRIO
+    const { error } = await supabase.from("users").insert([
+      {
+        email: cleanEmail,
+        password: cleanPassword
+      }
+    ])
+
+    if (error) {
+      console.log(error)
+      alert("Erro ao cadastrar")
+      return
+    }
+
+    alert("Conta criada com sucesso!")
     setIsLogin(true)
   }
 
